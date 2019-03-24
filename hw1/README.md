@@ -1,1 +1,1 @@
-g++ filenmae.cpp -o filename -lm -lGL -lGLU -lglut
+g++ hw1.cpp -o hw1 -lm -lGL -lGLU -lglut
