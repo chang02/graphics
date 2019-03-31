@@ -96,12 +96,12 @@ void Timer(int unused) {
 	glutPostRedisplay();
 	glutTimerFunc(0, Timer, 0);
 
-	seta += 0.000005;
+	seta += 0.000003;
 	rotationAngle1 = 66.0 * (sin(seta));
 
-	rotationAngle2 = rotationAngle2 + 0.0003;
+	rotationAngle2 = rotationAngle2 + 0.0004;
 
-	rotationAngle3 = rotationAngle3 - 0.0006;
+	rotationAngle3 = rotationAngle3 - 0.0008;
 }
 
 void keyboard(unsigned char key, int x, int y) {

@@ -1,1 +1,0 @@
-g++ hw1.cpp -o hw1 -lm -lGL -lGLU -lglut
