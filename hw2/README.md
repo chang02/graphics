@@ -1,0 +1,1 @@
+https://computergraphics.stackexchange.com/questions/151/how-to-implement-a-trackball-in-opengl
