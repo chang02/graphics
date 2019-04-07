@@ -22,7 +22,7 @@ GLfloat getZ(GLfloat x, GLfloat y);
 
 int width = 1200;
 int height = 800;
-int r = 400;
+int r = 300;
 float eye[3] = { 0.0f, 0.0f, 350.0f };
 float ori[3] = { 0.0f, 0.0f, 0.0f };
 float rot[3] = { 0.0f, 1.0f, 0.0f };
@@ -55,34 +55,47 @@ int main(int argc, char **argv) {
 
 bool leftButton = false;
 GLfloat mousePosX, mousePosY;
-struct result {
+struct xyz {
 	GLfloat x;
 	GLfloat y;
 	GLfloat z;
 };
+imu::Quaternion globalRQ(1.0, 0.0, 0.0, 0.0);
+imu::Quaternion globalRQ_(1.0, 0.0, 0.0, 0.0);
 
-result getXYZ(GLfloat x, GLfloat y) {
+xyz getXYZ(GLfloat x, GLfloat y) {
 	if ( x * x + y * y <= r * r) {
-		return result {x, y, sqrt((r * r) - (x * x) - (y * y))};
+		return xyz {x, y, sqrt((r * r) - (x * x) - (y * y))};
 	} else {
 		GLfloat tempx = sqrt((r * r) / (1 + (y * y)/(x * x)));
 		GLfloat tempy = sqrt((r * r) / (1 + (x * x)/(y * y)));
 		if (x >= 0 && y >= 0) {
-			return result {tempx, tempy, 0.0f};
+			return xyz {tempx, tempy, 0.0f};
 		} else if (x >= 0 && y < 0) {
-			return result {tempx, (-1)*tempy, 0.0f};
-		} else if (x < 0 && x >= 0) {
-			return result {(-1) * tempx, tempy, 0.0f};
+			return xyz {tempx, (-1)*tempy, 0.0f};
+		} else if (x < 0 && y >= 0) {
+			return xyz {(-1) * tempx, tempy, 0.0f};
 		} else if (x < 0 && y < 0) {
-			return result {(-1) * tempx, (-1) * tempy, 0.0f};
+			return xyz {(-1) * tempx, (-1) * tempy, 0.0f};
 		}
 	}
 }
 
 void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
-	auto xyz1 = getXYZ(x1 - width/2, (y1 - height/2) * (-1));
-	auto xyz2 = getXYZ(x2 - width/2, (y2 - height/2) * (-1));
-	printf("now xyz: %f, %f, %f", xyz2.x, xyz2.y, xyz2.z);
+	auto xyz1 = getXYZ(x1 - width/2, height/2 - y1);
+	auto xyz2 = getXYZ(x2 - width/2, height/2 - y2);
+
+	imu::Quaternion pos1(0, xyz1.x, xyz1.y, xyz1.z);
+	imu::Quaternion pos2(0, xyz2.x, xyz2.y, xyz2.z);
+	pos1 = globalRQ * pos1 * globalRQ_;
+	pos2 = globalRQ * pos2 * globalRQ_;
+	xyz1.x = pos1.x();
+	xyz1.y = pos1.y();
+	xyz1.z = pos1.z();
+	xyz2.x = pos2.x();
+	xyz2.y = pos2.y();
+	xyz2.z = pos2.z();
+
 	GLfloat crossX = xyz1.y * xyz2.z - xyz1.z * xyz2.y;
 	GLfloat crossY = xyz1.z * xyz2.x - xyz1.x * xyz2.z;
 	GLfloat crossZ = xyz1.x * xyz2.y - xyz1.y * xyz2.x;
@@ -98,24 +111,17 @@ void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	crossY = crossY / cross;
 	crossZ = crossZ / cross;
 
-	imu::Quaternion ax(cos(0.5 * theta), crossX * sin(theta / 2), crossY * sin(theta / 2), crossZ * sin(theta / 2));
-	// ax.normalize();
-	imu::Quaternion ax_ = ax.conjugate();
+	imu::Quaternion rq(cos(0.5 * theta), crossX * sin(theta / 2), crossY * sin(theta / 2), crossZ * sin(theta / 2));
+	imu::Quaternion rq_ = rq.conjugate();
 
 	imu::Quaternion p(0, eye[0], eye[1], eye[2]);
 	imu::Quaternion up(0, rot[0], rot[1], rot[2]);
 
-	imu::Quaternion p_ = ax * p * ax_;
-	imu::Quaternion up_ = ax * up * ax_;
+	globalRQ = rq * globalRQ;
+	globalRQ_ = globalRQ_ * rq_;
 
-	printf("theta : %f\n", theta);
-	
-	printf("previous up : %f, %f, %f\n", up.x(), up.y(), up.z());
-	printf("previous eye : %f, %f, %f\n", p.x(), p.y(), p.z());
-
-	printf("after up : %f, %f, %f\n", up_.x(), up_.y(), up_.z());
-	printf("after eye : %f, %f, %f\n", p_.x(), p_.y(), p_.z());
-	
+	imu::Quaternion p_ = rq * p * rq_;
+	imu::Quaternion up_ = rq * up * rq_;
 
 	eye[0] = p_.x();
 	eye[1] = p_.y();
