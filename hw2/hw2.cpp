@@ -11,6 +11,28 @@ struct xyz {
 	GLfloat y;
 	GLfloat z;
 };
+bool leftButton = false;
+bool translating = false;
+bool dolly = false;
+bool zoom = false;
+GLfloat mousePosX, mousePosY;
+imu::Quaternion globalRQ(1.0, 0.0, 0.0, 0.0);
+imu::Quaternion globalRQ_(1.0, 0.0, 0.0, 0.0);
+int width = 1200;
+int height = 800;
+int r = 300;
+GLfloat perspectiveAngle = 45.0;
+float eye[3] = { 0.0f, 0.0f, 350.0f };
+float ori[3] = { 0.0f, 0.0f, 0.0f };
+float rot[3] = { 0.0f, 1.0f, 0.0f };
+GLdouble rotMatrix[16] =
+{
+	1, 0, 0, 0,
+	0, 1, 0, 0,
+	0, 0, 1, 0,
+	0, 0, 0, 1
+};
+
 void glutMouse(int button, int state, int x, int y);
 void glutMotion(int x, int y);
 void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
@@ -18,6 +40,7 @@ void translate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
 void Timer(int unused);
 void keyboard(unsigned char key, int x, int y);
 void keyboardUp(unsigned char key, int x, int y);
+void specialKeyboard(int key, int x, int y);
 void resize(int x, int y);
 void loadGlobalCoord();
 void display();
@@ -29,21 +52,6 @@ void createCylinder2(GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat 
 GLfloat getZ(GLfloat x, GLfloat y);
 xyz getSphereXYZ(GLfloat x, GLfloat y);
 xyz getRealXYZ(xyz p);
-
-
-int width = 1200;
-int height = 800;
-int r = 300;
-float eye[3] = { 0.0f, 0.0f, 350.0f };
-float ori[3] = { 0.0f, 0.0f, 0.0f };
-float rot[3] = { 0.0f, 1.0f, 0.0f };
-GLdouble rotMatrix[16] =
-{
-	1, 0, 0, 0,
-	0, 1, 0, 0,
-	0, 0, 1, 0,
-	0, 0, 0, 1
-};
 
 int main(int argc, char **argv) {
     glutInit(&argc, argv);
@@ -57,6 +65,7 @@ int main(int argc, char **argv) {
 	glutTimerFunc(30, Timer, 0);
 	glutKeyboardFunc(keyboard);
 	glutKeyboardUpFunc(keyboardUp);
+	glutSpecialFunc(specialKeyboard);
 	glutMouseFunc(glutMouse);
 	glutMotionFunc(glutMotion);
 
@@ -64,14 +73,6 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
-bool leftButton = false;
-bool translating = false;
-bool dolly = false;
-bool zoom = false;
-GLfloat mousePosX, mousePosY;
-imu::Quaternion globalRQ(1.0, 0.0, 0.0, 0.0);
-imu::Quaternion globalRQ_(1.0, 0.0, 0.0, 0.0);
 
 xyz getSphereXYZ(GLfloat x, GLfloat y) {
 	if ( x * x + y * y <= r * r) {
@@ -188,10 +189,10 @@ void glutMotion(int x, int y) {
 		mousePosX = x;
 		mousePosY = y;
 		loadGlobalCoord();
-		
 	}
 	return;
 }
+
 float rotationAngle1 = 0.0;
 float rotationAngle2 = 0.0;
 float rotationAngle3 = 0.0;
@@ -246,13 +247,48 @@ void keyboardUp(unsigned char key, int x, int y) {
 	}
 }
 
+void specialKeyboard(int key, int x, int y) {
+	switch(key) {
+		case 101:	// key up
+			if (dolly) {
+				xyz direc = {0, 0, -2};
+				direc = getRealXYZ(direc);
+				eye[0] += direc.x;
+				eye[1] += direc.y;
+				eye[2] += direc.z;
+				loadGlobalCoord();
+			} else if (zoom) {
+				perspectiveAngle -= 0.5;
+				if (perspectiveAngle < 10)
+					perspectiveAngle = 10;
+				resize(width, height);
+			}
+			break;
+		case 103:	// key down
+			if (dolly) {
+				xyz direc = {0, 0, 2};
+				direc = getRealXYZ(direc);
+				eye[0] += direc.x;
+				eye[1] += direc.y;
+				eye[2] += direc.z;
+				loadGlobalCoord();
+			} else if (zoom) {
+				perspectiveAngle += 0.5;
+				if (perspectiveAngle > 80)
+					perspectiveAngle = 80;
+				resize(width, height);
+			}
+			break;
+	}
+}
+
 void resize(int x, int y) {
     width = x;
 	height = y;
 	glViewport(0, 0, x, y);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0f, (GLfloat)x / (GLfloat)y, .1f, 500.0f);
+	gluPerspective(perspectiveAngle, (GLfloat)x / (GLfloat)y, .1f, 500.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
