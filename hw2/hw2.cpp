@@ -38,7 +38,6 @@ void glutMouse(int button, int state, int x, int y);
 void glutMotion(int x, int y);
 void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
 void translate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
-void showAll();
 void Timer(int unused);
 void keyboard(unsigned char key, int x, int y);
 void keyboardUp(unsigned char key, int x, int y);
@@ -158,13 +157,6 @@ void translate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	realCenter.z += xyz2.z - xyz1.z;
 }
 
-void showAll() {
-	ori[0] = realCenter.x;
-	ori[1] = realCenter.y;
-	ori[2] = realCenter.z;
-	loadGlobalCoord();
-}
-
 void glutMouse(int button, int state, int x, int y) {
 	switch( button )
 	{
@@ -232,10 +224,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'Z':
 		zoom = true;
 		break;
-	case 'a':
-	case 'A':
-		showAll();
-		break;
+	default: break;
 	}
 }
 
@@ -253,6 +242,7 @@ void keyboardUp(unsigned char key, int x, int y) {
 		case 'Z':
 			zoom = false;
 			break;
+		default: break;
 	}
 }
 
