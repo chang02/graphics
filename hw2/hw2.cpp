@@ -6,10 +6,18 @@
 #include <algorithm>
 #include "Vec3.h"
 #include "quaternion.h"
+struct xyz {
+	GLfloat x;
+	GLfloat y;
+	GLfloat z;
+};
 void glutMouse(int button, int state, int x, int y);
 void glutMotion(int x, int y);
+void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
+void translate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
 void Timer(int unused);
 void keyboard(unsigned char key, int x, int y);
+void keyboardUp(unsigned char key, int x, int y);
 void resize(int x, int y);
 void loadGlobalCoord();
 void display();
@@ -19,6 +27,9 @@ GLfloat colorR1, GLfloat colorG1, GLfloat colorB1,
 GLfloat colorR2, GLfloat colorG2, GLfloat colorB2);
 void createCylinder2(GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat radius, GLfloat h);
 GLfloat getZ(GLfloat x, GLfloat y);
+xyz getSphereXYZ(GLfloat x, GLfloat y);
+xyz getRealXYZ(xyz p);
+
 
 int width = 1200;
 int height = 800;
@@ -45,6 +56,7 @@ int main(int argc, char **argv) {
 	glutDisplayFunc(display);
 	glutTimerFunc(30, Timer, 0);
 	glutKeyboardFunc(keyboard);
+	glutKeyboardUpFunc(keyboardUp);
 	glutMouseFunc(glutMouse);
 	glutMotionFunc(glutMotion);
 
@@ -54,16 +66,14 @@ int main(int argc, char **argv) {
 }
 
 bool leftButton = false;
+bool translating = false;
+bool dolly = false;
+bool zoom = false;
 GLfloat mousePosX, mousePosY;
-struct xyz {
-	GLfloat x;
-	GLfloat y;
-	GLfloat z;
-};
 imu::Quaternion globalRQ(1.0, 0.0, 0.0, 0.0);
 imu::Quaternion globalRQ_(1.0, 0.0, 0.0, 0.0);
 
-xyz getXYZ(GLfloat x, GLfloat y) {
+xyz getSphereXYZ(GLfloat x, GLfloat y) {
 	if ( x * x + y * y <= r * r) {
 		return xyz {x, y, sqrt((r * r) - (x * x) - (y * y))};
 	} else {
@@ -81,20 +91,22 @@ xyz getXYZ(GLfloat x, GLfloat y) {
 	}
 }
 
-void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
-	auto xyz1 = getXYZ(x1 - width/2, height/2 - y1);
-	auto xyz2 = getXYZ(x2 - width/2, height/2 - y2);
+xyz getRealXYZ(xyz p) {
+	imu::Quaternion a(0, p.x, p.y, p.z);
+	a = globalRQ * a * globalRQ_;
+	xyz result;
+	result.x = a.x();
+	result.y = a.y();
+	result.z = a.z();
+	return result;
+}
 
-	imu::Quaternion pos1(0, xyz1.x, xyz1.y, xyz1.z);
-	imu::Quaternion pos2(0, xyz2.x, xyz2.y, xyz2.z);
-	pos1 = globalRQ * pos1 * globalRQ_;
-	pos2 = globalRQ * pos2 * globalRQ_;
-	xyz1.x = pos1.x();
-	xyz1.y = pos1.y();
-	xyz1.z = pos1.z();
-	xyz2.x = pos2.x();
-	xyz2.y = pos2.y();
-	xyz2.z = pos2.z();
+void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
+	auto xyz1 = getSphereXYZ(x1 - width/2, height/2 - y1);
+	auto xyz2 = getSphereXYZ(x2 - width/2, height/2 - y2);
+
+	xyz1 = getRealXYZ(xyz1);
+	xyz2 = getRealXYZ(xyz2);
 
 	GLfloat crossX = xyz1.y * xyz2.z - xyz1.z * xyz2.y;
 	GLfloat crossY = xyz1.z * xyz2.x - xyz1.x * xyz2.z;
@@ -131,6 +143,22 @@ void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	rot[2] = up_.z();
 }
 
+GLfloat globalTX = 0;
+GLfloat globalTY = 0;
+GLfloat globalTZ = 0;
+
+void translate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
+	xyz xyz1 = 	{x1 - width/2, height/2 - y1, 0};
+	xyz xyz2 = 	{x2 - width/2, height/2 - y2, 0};
+
+	xyz1 = getRealXYZ(xyz1);
+	xyz2 = getRealXYZ(xyz2);
+	
+	globalTX += xyz2.x - xyz1.x;
+	globalTY += xyz2.y - xyz1.y;
+	globalTZ += xyz2.z - xyz1.z;
+}
+
 void glutMouse(int button, int state, int x, int y) {
 	switch( button )
 	{
@@ -152,13 +180,15 @@ void glutMouse(int button, int state, int x, int y) {
 
 void glutMotion(int x, int y) {
 	if (leftButton) {
-		rotate(mousePosX, mousePosY, x, y);
-
+		if (translating) {
+			translate(mousePosX, mousePosY ,x, y);
+		} else {
+			rotate(mousePosX, mousePosY, x, y);
+		}
 		mousePosX = x;
 		mousePosY = y;
-
 		loadGlobalCoord();
-		// glutPostRedisplay();
+		
 	}
 	return;
 }
@@ -184,8 +214,35 @@ void keyboard(unsigned char key, int x, int y) {
 	case 27:
 		exit(0);
 		break;
-	default:
+	case 't':
+	case 'T':
+		translating = true;
 		break;
+	case 'd':
+	case 'D':
+		dolly = true;
+		break;
+	case 'z':
+	case 'Z':
+		zoom = true;
+		break;
+	}
+}
+
+void keyboardUp(unsigned char key, int x, int y) {
+	switch (key) {
+		case 't':
+		case 'T':
+			translating = false;
+			break;
+		case 'd':
+		case 'D':
+			dolly = false;
+			break;
+		case 'z':
+		case 'Z':
+			zoom = false;
+			break;
 	}
 }
 
@@ -211,8 +268,9 @@ void display() {
 	glEnable(GL_DEPTH_TEST);
 	loadGlobalCoord();
 
+	glTranslatef(globalTX, globalTY, globalTZ);
 	glRotatef(-90,1,0,0);
-	glTranslatef(0, 0, 54);    
+	glTranslatef(0, 0, 54);
 
 	// 4 column -----------------------------------------
 	glPushMatrix();
