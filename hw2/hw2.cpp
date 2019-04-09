@@ -15,6 +15,7 @@ bool leftButton = false;
 bool translating = false;
 bool dolly = false;
 bool zoom = false;
+xyz realCenter = {0.0, 0.0, 0.0};
 GLfloat mousePosX, mousePosY;
 imu::Quaternion globalRQ(1.0, 0.0, 0.0, 0.0);
 imu::Quaternion globalRQ_(1.0, 0.0, 0.0, 0.0);
@@ -37,6 +38,7 @@ void glutMouse(int button, int state, int x, int y);
 void glutMotion(int x, int y);
 void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
 void translate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
+void showAll();
 void Timer(int unused);
 void keyboard(unsigned char key, int x, int y);
 void keyboardUp(unsigned char key, int x, int y);
@@ -144,10 +146,6 @@ void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	rot[2] = up_.z();
 }
 
-GLfloat globalTX = 0;
-GLfloat globalTY = 0;
-GLfloat globalTZ = 0;
-
 void translate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	xyz xyz1 = 	{x1 - width/2, height/2 - y1, 0};
 	xyz xyz2 = 	{x2 - width/2, height/2 - y2, 0};
@@ -155,9 +153,16 @@ void translate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	xyz1 = getRealXYZ(xyz1);
 	xyz2 = getRealXYZ(xyz2);
 	
-	globalTX += xyz2.x - xyz1.x;
-	globalTY += xyz2.y - xyz1.y;
-	globalTZ += xyz2.z - xyz1.z;
+	realCenter.x += xyz2.x - xyz1.x;
+	realCenter.y += xyz2.y - xyz1.y;
+	realCenter.z += xyz2.z - xyz1.z;
+}
+
+void showAll() {
+	ori[0] = realCenter.x;
+	ori[1] = realCenter.y;
+	ori[2] = realCenter.z;
+	loadGlobalCoord();
 }
 
 void glutMouse(int button, int state, int x, int y) {
@@ -226,6 +231,10 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'z':
 	case 'Z':
 		zoom = true;
+		break;
+	case 'a':
+	case 'A':
+		showAll();
 		break;
 	}
 }
@@ -304,7 +313,7 @@ void display() {
 	glEnable(GL_DEPTH_TEST);
 	loadGlobalCoord();
 
-	glTranslatef(globalTX, globalTY, globalTZ);
+	glTranslatef(realCenter.x, realCenter.y, realCenter.z);
 	glRotatef(-90,1,0,0);
 	glTranslatef(0, 0, 54);
 
