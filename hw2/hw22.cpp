@@ -15,10 +15,10 @@ bool leftButton = false;
 bool translating = false;
 bool dolly = false;
 bool zoom = false;
-xyz realCenter = {0.0, 0.0, 0.0};
+xyz cameraX = {1.0, 0.0, 0.0};
+xyz cameraY = {0.0, 1.0, 0.0};
+xyz cameraZ = {0.0, 0.0, 1.0};
 GLfloat mousePosX, mousePosY;
-imu::Quaternion globalRQ(1.0, 0.0, 0.0, 0.0);
-imu::Quaternion globalRQ_(1.0, 0.0, 0.0, 0.0);
 int width = 1200;
 int height = 800;
 int r = 300;
@@ -75,86 +75,8 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-xyz getSphereXYZ(GLfloat x, GLfloat y) {
-	if ( x * x + y * y <= r * r) {
-		return xyz {x, y, sqrt((r * r) - (x * x) - (y * y))};
-	} else {
-		GLfloat tempx = sqrt((r * r) / (1 + (y * y)/(x * x)));
-		GLfloat tempy = sqrt((r * r) / (1 + (x * x)/(y * y)));
-		if (x >= 0 && y >= 0) {
-			return xyz {tempx, tempy, 0.0f};
-		} else if (x >= 0 && y < 0) {
-			return xyz {tempx, (-1)*tempy, 0.0f};
-		} else if (x < 0 && y >= 0) {
-			return xyz {(-1) * tempx, tempy, 0.0f};
-		} else if (x < 0 && y < 0) {
-			return xyz {(-1) * tempx, (-1) * tempy, 0.0f};
-		}
-	}
-}
+void rotate(int x1, int y1, int x2, int y2) {
 
-xyz getRealXYZ(xyz p) {
-	imu::Quaternion a(0, p.x, p.y, p.z);
-	a = globalRQ * a * globalRQ_;
-	xyz result;
-	result.x = a.x();
-	result.y = a.y();
-	result.z = a.z();
-	return result;
-}
-
-void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
-	auto xyz1 = getSphereXYZ(x1 - width/2, height/2 - y1);
-	auto xyz2 = getSphereXYZ(x2 - width/2, height/2 - y2);
-
-	xyz1 = getRealXYZ(xyz1);
-	xyz2 = getRealXYZ(xyz2);
-
-	GLfloat crossX = xyz1.y * xyz2.z - xyz1.z * xyz2.y;
-	GLfloat crossY = xyz1.z * xyz2.x - xyz1.x * xyz2.z;
-	GLfloat crossZ = xyz1.x * xyz2.y - xyz1.y * xyz2.x;
-	GLfloat cross = sqrt(crossX * crossX + crossY * crossY + crossZ * crossZ);
-	GLfloat dot = xyz1.x * xyz2.x + xyz1.y * xyz2.y + xyz1.z * xyz2.z;
-	GLfloat theta = atan2(cross, dot);
-	theta = theta * (-1.0);
-
-	if (theta == 0.0) {
-		return;
-	}
-	crossX = crossX / cross;
-	crossY = crossY / cross;
-	crossZ = crossZ / cross;
-
-	imu::Quaternion rq(cos(0.5 * theta), crossX * sin(theta / 2), crossY * sin(theta / 2), crossZ * sin(theta / 2));
-	imu::Quaternion rq_ = rq.conjugate();
-
-	imu::Quaternion p(0, eye[0], eye[1], eye[2]);
-	imu::Quaternion up(0, rot[0], rot[1], rot[2]);
-
-	globalRQ = rq * globalRQ;
-	globalRQ_ = globalRQ_ * rq_;
-
-	imu::Quaternion p_ = rq * p * rq_;
-	imu::Quaternion up_ = rq * up * rq_;
-
-	eye[0] = p_.x();
-	eye[1] = p_.y();
-	eye[2] = p_.z();
-	rot[0] = up_.x();
-	rot[1] = up_.y();
-	rot[2] = up_.z();
-}
-
-void translate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
-	xyz xyz1 = 	{x1 - width/2, height/2 - y1, 0};
-	xyz xyz2 = 	{x2 - width/2, height/2 - y2, 0};
-
-	xyz1 = getRealXYZ(xyz1);
-	xyz2 = getRealXYZ(xyz2);
-	
-	realCenter.x += xyz2.x - xyz1.x;
-	realCenter.y += xyz2.y - xyz1.y;
-	realCenter.z += xyz2.z - xyz1.z;
 }
 
 void glutMouse(int button, int state, int x, int y) {
@@ -287,7 +209,7 @@ void resize(int x, int y) {
 	glViewport(0, 0, x, y);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(perspectiveAngle, (GLfloat)x / (GLfloat)y, .1f, 1000.0f);
+	gluPerspective(perspectiveAngle, (GLfloat)x / (GLfloat)y, .1f, 500.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
