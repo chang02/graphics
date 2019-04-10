@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
-#include "Vec3.h"
 #include "quaternion.h"
 struct xyz {
 	GLfloat x;
@@ -17,8 +16,8 @@ bool dolly = false;
 bool zoom = false;
 xyz realCenter = {0.0, 0.0, 0.0};
 GLfloat mousePosX, mousePosY;
-imu::Quaternion globalRQ(1.0, 0.0, 0.0, 0.0);
-imu::Quaternion globalRQ_(1.0, 0.0, 0.0, 0.0);
+qua::Quaternion globalRQ(1.0, 0.0, 0.0, 0.0);
+qua::Quaternion globalRQ_(1.0, 0.0, 0.0, 0.0);
 int width = 1200;
 int height = 800;
 int r = 300;
@@ -94,7 +93,7 @@ xyz getSphereXYZ(GLfloat x, GLfloat y) {
 }
 
 xyz getRealXYZ(xyz p) {
-	imu::Quaternion a(0, p.x, p.y, p.z);
+	qua::Quaternion a(0, p.x, p.y, p.z);
 	a = globalRQ * a * globalRQ_;
 	xyz result;
 	result.x = a.x();
@@ -125,17 +124,17 @@ void rotate(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	crossY = crossY / cross;
 	crossZ = crossZ / cross;
 
-	imu::Quaternion rq(cos(0.5 * theta), crossX * sin(theta / 2), crossY * sin(theta / 2), crossZ * sin(theta / 2));
-	imu::Quaternion rq_ = rq.conjugate();
+	qua::Quaternion rq(cos(0.5 * theta), crossX * sin(theta / 2), crossY * sin(theta / 2), crossZ * sin(theta / 2));
+	qua::Quaternion rq_ = rq.conjugate();
 
-	imu::Quaternion p(0, eye[0], eye[1], eye[2]);
-	imu::Quaternion up(0, rot[0], rot[1], rot[2]);
+	qua::Quaternion p(0, eye[0], eye[1], eye[2]);
+	qua::Quaternion up(0, rot[0], rot[1], rot[2]);
 
 	globalRQ = rq * globalRQ;
 	globalRQ_ = globalRQ_ * rq_;
 
-	imu::Quaternion p_ = rq * p * rq_;
-	imu::Quaternion up_ = rq * up * rq_;
+	qua::Quaternion p_ = rq * p * rq_;
+	qua::Quaternion up_ = rq * up * rq_;
 
 	eye[0] = p_.x();
 	eye[1] = p_.y();

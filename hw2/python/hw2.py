@@ -43,8 +43,17 @@ def getSphereXYZ(x, y):
     if x * x + y * y <= glo.r * glo.r:
         return xyz.dot(x, y, math.sqrt((glo.r * glo.r) - (x * x) - (y * y)))
     else:
-        tempx = math.sqrt((glo.r * glo.r) / (1 + (y * y)/(x * x)))
-        tempy = math.sqrt((glo.r * glo.r) / (1 + (x * x)/(y * y)))
+        tempx = 0
+        tempy = 0
+        if x == 0:
+            tempx = 0
+            tempy = glo.r
+        elif y == 0:
+            tempx = glo.r
+            tempy = 0
+        else:
+            tempx = math.sqrt((glo.r * glo.r) / (1 + (y * y)/(x * x)))
+            tempy = math.sqrt((glo.r * glo.r) / (1 + (x * x)/(y * y)))
         if x >= 0 and y >= 0:
             return xyz.dot(tempx, tempy, 0.0)
         elif x >= 0 and y < 0:
@@ -72,9 +81,11 @@ def rotate(x1, y1, x2, y2):
 
     vec1 = xyz.vector(beforeXYZ.x, beforeXYZ.y, beforeXYZ.z)
     vec2 = xyz.vector(afterXYZ.x, afterXYZ.y, afterXYZ.z)
-    theta = vec2.getAngle(vec1)
+    theta = vec1.getAngle(vec2)
     if theta == 0.0:
         return
+    else:
+        theta = (-1) * theta
 
     cross =  vec1.cross(vec2)
     cross.normalize()
@@ -93,7 +104,7 @@ def rotate(x1, y1, x2, y2):
 
     glo.eye.x = p_.x
     glo.eye.y = p_.y
-    glo.eye.z = p_.y
+    glo.eye.z = p_.z
     glo.up.x = up_.x
     glo.up.y = up_.y
     glo.up.z = up_.z
@@ -112,7 +123,7 @@ def reshape(x, y):
     glViewport(0, 0, x, y)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(glo.perspectiveAngle, x / y, 0.1, 500.0)
+    gluPerspective(glo.perspectiveAngle, x / y, 0.1, 1000.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
