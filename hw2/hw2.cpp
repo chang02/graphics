@@ -20,7 +20,7 @@ qua::Quaternion globalRQ(1.0, 0.0, 0.0, 0.0);
 qua::Quaternion globalRQ_(1.0, 0.0, 0.0, 0.0);
 int width = 1200;
 int height = 800;
-int r = 300;
+int r = 340;
 GLfloat perspectiveAngle = 45.0;
 float eye[3] = { 0.0f, 0.0f, 350.0f };
 float ori[3] = { 0.0f, 0.0f, 0.0f };
@@ -249,11 +249,13 @@ void specialKeyboard(int key, int x, int y) {
 	switch(key) {
 		case 101:	// key up
 			if (dolly) {
-				xyz direc = {0, 0, -2};
-				direc = getRealXYZ(direc);
-				eye[0] += direc.x;
-				eye[1] += direc.y;
-				eye[2] += direc.z;
+				xyz direc = {eye[0], eye[1], eye[2]};
+				direc.x = 2 * direc.x / sqrt(direc.x * direc.x + direc.y * direc.y + direc.z * direc.z);
+				direc.y = 2 * direc.y / sqrt(direc.x * direc.x + direc.y * direc.y + direc.z * direc.z);
+				direc.z = 2 * direc.z / sqrt(direc.x * direc.x + direc.y * direc.y + direc.z * direc.z);
+				eye[0] -= direc.x;
+				eye[1] -= direc.y;
+				eye[2] -= direc.z;
 				loadGlobalCoord();
 			} else if (zoom) {
 				perspectiveAngle -= 0.5;
@@ -264,8 +266,10 @@ void specialKeyboard(int key, int x, int y) {
 			break;
 		case 103:	// key down
 			if (dolly) {
-				xyz direc = {0, 0, 2};
-				direc = getRealXYZ(direc);
+				xyz direc = {eye[0], eye[1], eye[2]};
+				direc.x = 2 * direc.x / sqrt(direc.x * direc.x + direc.y * direc.y + direc.z * direc.z);
+				direc.y = 2 * direc.y / sqrt(direc.x * direc.x + direc.y * direc.y + direc.z * direc.z);
+				direc.z = 2 * direc.z / sqrt(direc.x * direc.x + direc.y * direc.y + direc.z * direc.z);
 				eye[0] += direc.x;
 				eye[1] += direc.y;
 				eye[2] += direc.z;
@@ -283,10 +287,12 @@ void specialKeyboard(int key, int x, int y) {
 void resize(int x, int y) {
     width = x;
 	height = y;
+	int min = width<height?width:height;
+	r = min / 2 * 0.85;
 	glViewport(0, 0, x, y);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(perspectiveAngle, (GLfloat)x / (GLfloat)y, .1f, 1000.0f);
+	gluPerspective(perspectiveAngle, (GLfloat)x / (GLfloat)y, 0.1f, 1000.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
