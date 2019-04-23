@@ -1,0 +1,30 @@
+BSPLINE # Curve type (BSPLINE or CATMULL_ROM)
+3 # The number of cross sections.
+5 # The number of control points per cross section
+# The first cross section
+10 10 # The 2D position of control points
+20 15 # The coordinates of the cross section is defined
+15 20 # on X-Z plane
+50 20
+60 30
+1.5 # Scaling factor
+1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+10 50 30 # Position
+# The second cross section
+10 10 # The 2D position of control points
+20 15 # The coordinates of the cross section is defined
+15 20 # on X-Z plane
+50 20
+60 30
+2.0 # Scaling factor
+1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+30 50 30 # Position
+# The third cross section
+10 10 # The 2D position of control points
+20 15 # The coordinates of the cross section is defined
+15 20 # on X-Z plane
+50 20
+60 30
+3.0 # Scaling factor
+1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+60 50 30 # Position
