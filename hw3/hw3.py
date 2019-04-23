@@ -164,19 +164,9 @@ def rotate(x1, y1, x2, y2):
 
     rq = quaternion.multiply(q, rq)
     rq_ = quaternion.multiply(rq_, q_)
-
-    eyep = quaternion(0, eye.x, eye.y, eye.z)
-    upp = quaternion(0, up.x, up.y, up.z)
     
-    eyep = quaternion.rotate(q, eyep)
-    upp = quaternion.rotate(q, upp)
-
-    eye.x = eyep.x
-    eye.y = eyep.y
-    eye.z = eyep.z
-    up.x = upp.x
-    up.y = upp.y
-    up.z = upp.z
+    eye = quaternion.rotate(q, eye)
+    up = quaternion.rotate(q, up)
 
     loadGlobalCoord()
     glutPostRedisplay()

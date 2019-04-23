@@ -1,4 +1,5 @@
 import math
+from xyz import xyz
 
 class quaternion:
     def __init__(self, w, x, y, z):
@@ -24,9 +25,10 @@ class quaternion:
         return result
 
     @staticmethod
-    def rotate(rotateQuaternion, pointQuaternion):
+    def rotate(rotateQuaternion, point):
+        pointQuaternion = quaternion(0, point.x, point.y, point.z)
         rotateQuaternion_ = rotateQuaternion.conjugate()
         result = quaternion.multiply(rotateQuaternion, pointQuaternion)
         result = quaternion.multiply(result, rotateQuaternion_)
-        return result
+        return xyz(result.x, result.y, result.z)
         
