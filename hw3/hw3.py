@@ -1,5 +1,6 @@
 import sys
 import math
+import json
 import OpenGL
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -32,6 +33,34 @@ globalTranslate = xyz(0.0, 0.0, 0.0)
 
 def processInputFile():
     f = open('input.txt', 'r')
+    lines = f.readlines()
+    curveType = lines[0].split(' ')[0]
+    crossSectionNum = int(lines[1].split(' ')[0])
+    controllPointNum = int(lines[2].split(' ')[0])
+    crossSections = []
+    for i in range(0, crossSectionNum):
+        controllPoints = []
+        for j in range(0, controllPointNum):
+            x = float(lines[4 + i * (controllPointNum + 4) + j].split(' ')[0])
+            z = float(lines[4 + i * (controllPointNum + 4) + j].split(' ')[1])
+            controllPoint = xyz(x, 0, z)
+            controllPoints.append(controllPoint)
+        scaleFactor = float(lines[4 + i * (controllPointNum + 4) + controllPointNum].split(' ')[0])
+        w = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[0])
+        x = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[1])
+        y = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[2])
+        z = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[3])
+        rotation = quaternion(w, x, y, z)
+        x = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 2].split(' ')[0])
+        y = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 2].split(' ')[1])
+        z = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 2].split(' ')[2])
+        position = xyz(x, y, z)
+        crossSections.append({
+            "controllPoints": controllPoints,
+            "scaleFactor": scaleFactor,
+            "rotation": rotation,
+            "position": position,
+        })        
 
 def reshape(x, y):
     global width

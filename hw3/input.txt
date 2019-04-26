@@ -17,7 +17,7 @@ BSPLINE # Curve type (BSPLINE or CATMULL_ROM)
 50 20
 60 30
 2.0 # Scaling factor
-1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.4
 30 50 30 # Position
 # The third cross section
 10 10 # The 2D position of control points
@@ -26,5 +26,5 @@ BSPLINE # Curve type (BSPLINE or CATMULL_ROM)
 50 20
 60 30
 3.0 # Scaling factor
-1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.6
 60 50 30 # Position
