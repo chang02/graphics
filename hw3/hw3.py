@@ -1,6 +1,7 @@
 import sys
 import math
 import json
+import copy
 import OpenGL
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -30,8 +31,97 @@ zoom = False
 rq = quaternion(1, 0, 0, 0)
 rq_ = quaternion(1, 0, 0, 0)
 globalTranslate = xyz(0.0, 0.0, 0.0)
+splinePoints = []
+
+def scaleRotatePosition(crossSections):
+    result = []
+    for crossSection in crossSections:
+        controllPoints = crossSection['controllPoints']
+        scale = crossSection['scale']
+        rotate = crossSection['rotation']
+        position = crossSection['position']
+        tempResult = []
+        for controllPoint in controllPoints:
+            realControllPoint = xyz(controllPoint.x * scale, controllPoint.y * scale, controllPoint.z * scale)
+            realControllPoint = quaternion.rotate(rotate, realControllPoint)
+            realControllPoint = xyz(realControllPoint.x + position.x, realControllPoint.y + position.y, realControllPoint.z + position.z)
+            tempResult.append(realControllPoint)
+        result.append(tempResult)
+    return result
+
+def toBsplinePoints(realControllPoint):
+    i = 0
+    result = []
+    p = copy.deepcopy(realControllPoint)
+    p.append(p[0])
+    p.append(p[1])
+    p.append(p[2])
+    while i + 4 <= len(p):
+        t = 0.1
+        while t <= 1.0:
+            it = 1.0 - t
+            b0 = it*it*it/6
+            b1 = (3*t*t*t - 6*t*t +4)/6
+            b2 = (-3*t*t*t +3*t*t + 3*t + 1)/6
+            b3 =  t*t*t/6
+            x = b0 * p[i].x + b1 * p[i+1].x + b2 * p[i+2].x + b3 * p[i+3].x
+            y = b0 * p[i].y + b1 * p[i+1].y + b2 * p[i+2].y + b3 * p[i+3].y
+            z = b0 * p[i].z + b1 * p[i+1].z + b2 * p[i+2].z + b3 * p[i+3].z
+            result.append(xyz(x, y, z))
+            t += 0.1
+        i += 1
+    return result
+
+def toCatmullRomPoints(realControllPoint):
+    i = 0
+    result = []
+    p = copy.deepcopy(realControllPoint)
+    p.append(p[0])
+    p.append(p[1])
+    p.append(p[2])
+    while i + 4 <= len(p):
+        t = 0.1
+        while t <= 1.0:
+            t2 = t * t
+            t3 = t2 * t
+            x = ((2 * p[i+1].x) + ((-p[i].x + p[i+2].x) * t) + ((2 * p[i].x - 5 * p[i+1].x + 4 * p[i+2].x - p[i+3].x) * t2) + ((-p[i].x + 3 * p[i+1].x - 3 * p[i+2].x + p[i+3].x) * t3)) * 0.5
+            y = ((2 * p[i+1].y) + ((-p[i].y + p[i+2].y) * t) + ((2 * p[i].y - 5 * p[i+1].y + 4 * p[i+2].y - p[i+3].y) * t2) + ((-p[i].y + 3 * p[i+1].y - 3 * p[i+2].y + p[i+3].y) * t3)) * 0.5
+            z = ((2 * p[i+1].z) + ((-p[i].z + p[i+2].z) * t) + ((2 * p[i].z - 5 * p[i+1].z + 4 * p[i+2].z - p[i+3].z) * t2) + ((-p[i].z + 3 * p[i+1].z - 3 * p[i+2].z + p[i+3].z) * t3)) * 0.5
+            result.append(xyz(x, y, z))
+            t += 0.1
+        i += 1
+    return result
+
+def toCatmullRomSurface(crossSections):
+    # {
+    #     "controllPoints": controllPoints,
+    #     "scale": scaleFactor,
+    #     "rotation": rotation,
+    #     "position": position,
+    # }
+    result = []
+    sections = copy.deepcopy(crossSections)
+    i = 0
+    while i + 4 <= len(sections):
+        t = 0.1
+        controllPoints = []
+        scale = None
+        rotation = None
+        position = None
+        while t <= 1.0:
+            t2 = t * t
+            t3 = t2 * t
+            for p0, p1, p2, p3 in zip(sections[i].controllPoints, sections[i+1].controllPoints, sections[i+2].controllPoints, sections[i+3].controllPoints):
+                x = ((2 * p1.x) + ((-p0.x + p2.x) * t) + ((2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2) + ((-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3)) * 0.5
+                y = ((2 * p1.y) + ((-p0.y + p2.y) * t) + ((2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2) + ((-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3)) * 0.5
+                z = ((2 * p1.z) + ((-p0.z + p2.z) * t) + ((2 * p0.z - 5 * p1.z + 4 * p2.z - p3.z) * t2) + ((-p0.z + 3 * p1.z - 3 * p2.z + p3.z) * t3)) * 0.5
+                controllPoints.append(xyz(x, y, z))
+            scale = ((2 * sections[i+1].scale) + ((-sections[i].scale + sections[i+2].scale) * t) + ((2 * sections[i].scale - 5 * sections[i+1].scale + 4 * sections[i+2].scale - sections[i+3].scale) * t2) + ((-sections[i].scale + 3 * sections[i+1].scale - 3 * sections[i+2].scale + sections[i+3].scale) * t3)) * 0.5
+            position = ((2 * sections[i+1].position) + ((-sections[i].position + sections[i+2].position) * t) + ((2 * sections[i].position - 5 * sections[i+1].position + 4 * sections[i+2].position - sections[i+3].position) * t2) + ((-sections[i].position + 3 * sections[i+1].position - 3 * sections[i+2].position + sections[i+3].position) * t3)) * 0.5
 
 def processInputFile():
+    global splinePoints
+
     f = open('input.txt', 'r')
     lines = f.readlines()
     curveType = lines[0].split(' ')[0]
@@ -46,21 +136,32 @@ def processInputFile():
             controllPoint = xyz(x, 0, z)
             controllPoints.append(controllPoint)
         scaleFactor = float(lines[4 + i * (controllPointNum + 4) + controllPointNum].split(' ')[0])
-        w = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[0])
+        theta = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[0])
         x = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[1])
         y = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[2])
         z = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[3])
-        rotation = quaternion(w, x, y, z)
+        rotation = quaternion(math.cos(0.5 * theta), x * math.sin(0.5 * theta), y * math.sin(0.5 * theta), z * math.sin(0.5 * theta))
         x = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 2].split(' ')[0])
         y = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 2].split(' ')[1])
         z = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 2].split(' ')[2])
         position = xyz(x, y, z)
         crossSections.append({
             "controllPoints": controllPoints,
-            "scaleFactor": scaleFactor,
+            "scale": scaleFactor,
             "rotation": rotation,
             "position": position,
-        })        
+        })
+    
+    crossSections = toCatmullRomSurface(crossSections)
+
+    realControllPoints = scaleRotatePosition(crossSections)
+    if curveType == 'BSPLINE':
+        for realControllPoint in realControllPoints:
+            splinePoints.append(toBsplinePoints(realControllPoint))
+    elif curveType == 'CATMULL_ROM':
+        for realControllPoint in realControllPoints:
+            splinePoints.append(toCatmullRomPoints(realControllPoint))
+
 
 def reshape(x, y):
     global width
@@ -91,8 +192,18 @@ def loadGlobalCoord():
     gluLookAt(eye.x, eye.y, eye.z, ori.x, ori.y, ori.z, up.x, up.y, up.z)
     glMultMatrixd(rotMatrix)
 
+def drawSections(splinePoints):
+    for idx, splinePoint in enumerate(splinePoints):
+        glBegin(GL_POLYGON)
+        glColor3f((idx+1)/5, (idx+1)/5, (idx+1)/5)
+        for point in splinePoint:
+            glVertex3f(point.x, point.y, point.z)
+        glEnd()
+
 def display():
     global globalTranslate
+    global splinePoints
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glEnable(GL_DEPTH_TEST)
     loadGlobalCoord()
@@ -101,53 +212,7 @@ def display():
 
     glTranslatef(globalTranslate.x, globalTranslate.y, globalTranslate.z)
 
-    glBegin(GL_POLYGON)
-    glColor(15/255,80/255,50/255)
-    glVertex(10, -10, -10)
-    glVertex(10, 10, -10)
-    glVertex(-10, 10, -10)
-    glVertex(-10, -10, -10)
-    glEnd()
-
-    glBegin(GL_POLYGON)
-    glColor(50/255,50/255,50/255)
-    glVertex(10, -10, -10)
-    glVertex(-10, -10, -10)
-    glVertex(-10, -10, 10)
-    glVertex(10, -10, 10)
-    glEnd()
-
-    glBegin(GL_POLYGON)
-    glColor(100/255,100/255,100/255)
-    glVertex(10, -10, -10)
-    glVertex(10, 10, -10)
-    glVertex(10, 10, 10)
-    glVertex(10, -10, 10)
-    glEnd()
-
-    glBegin(GL_POLYGON)
-    glColor(150/255,150/255,150/255)
-    glVertex(10, 10, -10)
-    glVertex(-10, 10, -10)
-    glVertex(-10, 10, 10)
-    glVertex(10, 10, 10)
-    glEnd()
-
-    glBegin(GL_POLYGON)
-    glColor(200/255,200/255,200/255)
-    glVertex(-10, -10, -10)
-    glVertex(-10, 10, -10)
-    glVertex(-10, 10, 10)
-    glVertex(-10, -10, 10)
-    glEnd()
-
-    glBegin(GL_POLYGON)
-    glColor(100/255,150/255,200/255)
-    glVertex(-10, -10, 10)
-    glVertex(-10, 10, 10)
-    glVertex(10, 10, 10)
-    glVertex(10, -10, 10)
-    glEnd()
+    drawSections(splinePoints)
     
     glPopMatrix()
 
@@ -301,8 +366,6 @@ def glutMotion(x, y):
 
     if leftButton:
         if translating:
-            print(mousePosX, mousePosY)
-            print(x, y)
             translate(mousePosX, mousePosY ,x, y)
             mousePosX = x
             mousePosY = y

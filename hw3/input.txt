@@ -1,30 +1,48 @@
-BSPLINE # Curve type (BSPLINE or CATMULL_ROM)
-3 # The number of cross sections.
+CATMULL_ROM # Curve type (BSPLINE or CATMULL_ROM)
+5 # The number of cross sections.
 5 # The number of control points per cross section
 # The first cross section
-10 10 # The 2D position of control points
-20 15 # The coordinates of the cross section is defined
-15 20 # on X-Z plane
-50 20
-60 30
-1.5 # Scaling factor
-1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
-10 50 30 # Position
+-10 -10 # The 2D position of control points
+10 -10 # The coordinates of the cross section is defined
+13 3 # on X-Z plane
+0 10
+-13 3
+0.5 # Scaling factor
+-0.5 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+0 -20 0 # Position
 # The second cross section
-10 10 # The 2D position of control points
-20 15 # The coordinates of the cross section is defined
-15 20 # on X-Z plane
-50 20
-60 30
-2.0 # Scaling factor
-1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.4
-30 50 30 # Position
+-10 -10 # The 2D position of control points
+10 -10 # The coordinates of the cross section is defined
+13 3 # on X-Z plane
+0 10
+-13 3
+0.75 # Scaling factor
+-0.25 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+0 -10 0 # Position
 # The third cross section
-10 10 # The 2D position of control points
-20 15 # The coordinates of the cross section is defined
-15 20 # on X-Z plane
-50 20
-60 30
-3.0 # Scaling factor
-1.2 1 0 0 # Rotation about axis (1,0,0) by angle 1.6
-60 50 30 # Position
+-10 -10 # The 2D position of control points
+10 -10 # The coordinates of the cross section is defined
+13 3 # on X-Z plane
+0 10
+-13 3
+1 # Scaling factor
+0 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+0 0 0 # Position
+# The fourth cross section
+-10 -10 # The 2D position of control points
+10 -10 # The coordinates of the cross section is defined
+13 3 # on X-Z plane
+0 10
+-13 3
+1.25 # Scaling factor
+0.25 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+0 10 0 # Position
+# The fifth cross section
+-10 -10 # The 2D position of control points
+10 -10 # The coordinates of the cross section is defined
+13 3 # on X-Z plane
+0 10
+-13 3
+1.5 # Scaling factor
+0.5 1 0 0 # Rotation about axis (1,0,0) by angle 1.2
+0 20 0 # Position

@@ -6,6 +6,9 @@ class xyz:
         self.y = y
         self.z = z
 
+    def __str__(self):
+        return '(' + str(self.x) + ',' + str(self.y) + ',' + str(self.z) + ')'
+
     @staticmethod
     def crossProduct(a, b):
         tempx = a.y * b.z - a.z * b.y
