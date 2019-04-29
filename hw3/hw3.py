@@ -31,7 +31,8 @@ zoom = False
 rq = quaternion(1, 0, 0, 0)
 rq_ = quaternion(1, 0, 0, 0)
 globalTranslate = xyz(0.0, 0.0, 0.0)
-splinePoints = []
+splinePoints1 = []
+splinePoints2 = []
 
 def scaleRotatePosition(crossSections):
     result = []
@@ -57,7 +58,7 @@ def toBsplinePoints(realControllPoint):
     p.append(p[1])
     p.append(p[2])
     while i + 4 <= len(p):
-        t = 0.1
+        t = 0.33
         while t <= 1.0:
             it = 1.0 - t
             b0 = it*it*it/6
@@ -68,7 +69,7 @@ def toBsplinePoints(realControllPoint):
             y = b0 * p[i].y + b1 * p[i+1].y + b2 * p[i+2].y + b3 * p[i+3].y
             z = b0 * p[i].z + b1 * p[i+1].z + b2 * p[i+2].z + b3 * p[i+3].z
             result.append(xyz(x, y, z))
-            t += 0.1
+            t += 0.33
         i += 1
     return result
 
@@ -80,7 +81,7 @@ def toCatmullRomPoints(realControllPoint):
     p.append(p[1])
     p.append(p[2])
     while i + 4 <= len(p):
-        t = 0.1
+        t = 0.33
         while t <= 1.0:
             t2 = t * t
             t3 = t2 * t
@@ -88,22 +89,16 @@ def toCatmullRomPoints(realControllPoint):
             y = ((2 * p[i+1].y) + ((-p[i].y + p[i+2].y) * t) + ((2 * p[i].y - 5 * p[i+1].y + 4 * p[i+2].y - p[i+3].y) * t2) + ((-p[i].y + 3 * p[i+1].y - 3 * p[i+2].y + p[i+3].y) * t3)) * 0.5
             z = ((2 * p[i+1].z) + ((-p[i].z + p[i+2].z) * t) + ((2 * p[i].z - 5 * p[i+1].z + 4 * p[i+2].z - p[i+3].z) * t2) + ((-p[i].z + 3 * p[i+1].z - 3 * p[i+2].z + p[i+3].z) * t3)) * 0.5
             result.append(xyz(x, y, z))
-            t += 0.1
+            t += 0.33
         i += 1
     return result
 
 def toCatmullRomSurface(crossSections):
-    # {
-    #     "controllPoints": controllPoints,
-    #     "scale": scaleFactor,
-    #     "rotation": rotation,
-    #     "position": position,
-    # }
     result = []
     sections = copy.deepcopy(crossSections)
     i = 0
     while i + 4 <= len(sections):
-        t = 0.1
+        t = 0.33
         controllPoints = []
         scale = None
         rotation = None
@@ -125,37 +120,52 @@ def toCatmullRomSurface(crossSections):
                 "rotation": rotation,
                 "position": position,
             })
-            t += 0.1
+            t += 0.33
         i += 1
     return result
 
 def processInputFile():
-    global splinePoints
+    global splinePoints1
+    global splinePoints2
 
-    f = open('input.txt', 'r')
+    f = open('input3.txt', 'r')
     lines = f.readlines()
-    # for line, idx in lines:
-    #     if ()
-    curveType = lines[0].split(' ')[0]
-    crossSectionNum = int(lines[1].split(' ')[0])
-    controllPointNum = int(lines[2].split(' ')[0])
+
+    # parse
+    for idx, line in enumerate(lines):
+        lines[idx] = line.split('#')[0]
+    
+    i = 0
+    while i < len(lines):
+        if lines[i].isspace() or lines[i] == '':
+            lines.remove(lines[i])
+        else:
+            i += 1
+
+    for idx, line in enumerate(lines):
+        if line.isspace() or line == '':
+            lines.remove(line)
+    
+    curveType = lines[0].split()[0]
+    crossSectionNum = int(lines[1].split()[0])
+    controllPointNum = int(lines[2].split()[0])
     crossSections = []
     for i in range(0, crossSectionNum):
         controllPoints = []
         for j in range(0, controllPointNum):
-            x = float(lines[4 + i * (controllPointNum + 4) + j].split(' ')[0])
-            z = float(lines[4 + i * (controllPointNum + 4) + j].split(' ')[1])
+            x = float(lines[3 + i * (controllPointNum + 3) + j].split()[0])
+            z = float(lines[3 + i * (controllPointNum + 3) + j].split()[1])
             controllPoint = xyz(x, 0, z)
             controllPoints.append(controllPoint)
-        scaleFactor = float(lines[4 + i * (controllPointNum + 4) + controllPointNum].split(' ')[0])
-        theta = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[0])
-        x = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[1])
-        y = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[2])
-        z = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 1].split(' ')[3])
+        scaleFactor = float(lines[3 + i * (controllPointNum + 3) + controllPointNum].split()[0])
+        theta = float(lines[3 + i * (controllPointNum + 3) + controllPointNum + 1].split()[0])
+        x = float(lines[3 + i * (controllPointNum + 3) + controllPointNum + 1].split()[1])
+        y = float(lines[3 + i * (controllPointNum + 3) + controllPointNum + 1].split()[2])
+        z = float(lines[3 + i * (controllPointNum + 3) + controllPointNum + 1].split()[3])
         rotation = quaternion(math.cos(0.5 * theta), x * math.sin(0.5 * theta), y * math.sin(0.5 * theta), z * math.sin(0.5 * theta))
-        x = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 2].split(' ')[0])
-        y = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 2].split(' ')[1])
-        z = float(lines[4 + i * (controllPointNum + 4) + controllPointNum + 2].split(' ')[2])
+        x = float(lines[3 + i * (controllPointNum + 3) + controllPointNum + 2].split()[0])
+        y = float(lines[3 + i * (controllPointNum + 3) + controllPointNum + 2].split()[1])
+        z = float(lines[3 + i * (controllPointNum + 3) + controllPointNum + 2].split()[2])
         position = xyz(x, y, z)
         crossSections.append({
             "controllPoints": controllPoints,
@@ -163,16 +173,26 @@ def processInputFile():
             "rotation": rotation,
             "position": position,
         })
-    
-    crossSections = toCatmullRomSurface(crossSections)
+
+    crossSections.insert(0, crossSections[0])
+    crossSections.append(crossSections[len(crossSections) - 1])
 
     realControllPoints = scaleRotatePosition(crossSections)
     if curveType == 'BSPLINE':
         for realControllPoint in realControllPoints:
-            splinePoints.append(toBsplinePoints(realControllPoint))
+            splinePoints1.append(toBsplinePoints(realControllPoint))
     elif curveType == 'CATMULL_ROM':
         for realControllPoint in realControllPoints:
-            splinePoints.append(toCatmullRomPoints(realControllPoint))
+            splinePoints1.append(toCatmullRomPoints(realControllPoint))    
+
+    catmullRomCrossSections = toCatmullRomSurface(crossSections)
+    realControllPoints = scaleRotatePosition(catmullRomCrossSections)
+    if curveType == 'BSPLINE':
+        for realControllPoint in realControllPoints:
+            splinePoints2.append(toBsplinePoints(realControllPoint))
+    elif curveType == 'CATMULL_ROM':
+        for realControllPoint in realControllPoints:
+            splinePoints2.append(toCatmullRomPoints(realControllPoint))
 
 
 def reshape(x, y):
@@ -204,17 +224,40 @@ def loadGlobalCoord():
     gluLookAt(eye.x, eye.y, eye.z, ori.x, ori.y, ori.z, up.x, up.y, up.z)
     glMultMatrixd(rotMatrix)
 
-def drawSections(splinePoints):
-    for idx, splinePoint in enumerate(splinePoints):
-        glBegin(GL_LINE_LOOP)
-        glColor3f((idx+1)/50, (idx+1)/50, 1)
+def drawCrossSections(sections):
+    for idx, splinePoint in enumerate(sections):
+        glBegin(GL_LINE_STRIP)
+        glColor3f(1, 1, 1)
         for point in splinePoint:
             glVertex3f(point.x, point.y, point.z)
         glEnd()
 
+def drawCatmullRomSections(sections):
+    i = 0
+    while i + 1 < len(sections):
+        j = 0
+        while j + 1 < len(sections[i]):
+            glBegin(GL_LINE_STRIP)
+            glColor3f(0, 1, 1)
+            glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
+            glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
+            glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
+            glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
+            glEnd()
+            glBegin(GL_POLYGON)
+            glColor3f(1, 0, 1)
+            glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
+            glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
+            glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
+            glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
+            glEnd()
+            j += 1
+        i += 1
+
 def display():
     global globalTranslate
-    global splinePoints
+    global splinePoints1
+    global splinePoints2
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glEnable(GL_DEPTH_TEST)
@@ -224,7 +267,8 @@ def display():
 
     glTranslatef(globalTranslate.x, globalTranslate.y, globalTranslate.z)
 
-    drawSections(splinePoints)
+    drawCrossSections(splinePoints1)
+    drawCatmullRomSections(splinePoints2)
     
     glPopMatrix()
 
@@ -297,8 +341,14 @@ def getSphereCoord(x, y):
         result = xyz(coordx, coordy, math.sqrt(r * r - coordx * coordx - coordy * coordy))
         return result
     else:
-        tempx = math.sqrt((r * r) / (1 + (coordy * coordy) / (coordx * coordx)))
-        tempy = math.sqrt((r * r) / (1 + (coordx * coordx) / (coordy * coordy)))
+        try:
+            tempx = math.sqrt((r * r) / (1 + (coordy * coordy) / (coordx * coordx)))
+        except:
+            tempx = 0
+        try:
+            tempy = math.sqrt((r * r) / (1 + (coordx * coordx) / (coordy * coordy)))
+        except:
+            tempy = 0
         if coordx >= 0 and coordy >= 0:
             return xyz(tempx, tempy, 0.0)
         elif coordx >= 0 and coordy < 0:
@@ -342,8 +392,6 @@ def rotate(x1, y1, x2, y2):
 
     axis = xyz.normalize(xyz.crossProduct(xyz1, xyz2))
     theta = xyz.getTheta(xyz1, xyz2)
-    print(axis)
-    print(theta)
     theta = (-1) * theta
 
     q = quaternion(math.cos(0.5 * theta), axis.x * math.sin(0.5 * theta), axis.y * math.sin(0.5 * theta), axis.z * math.sin(0.5 * theta))
