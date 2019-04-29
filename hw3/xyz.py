@@ -8,6 +8,24 @@ class xyz:
 
     def __str__(self):
         return '(' + str(self.x) + ',' + str(self.y) + ',' + str(self.z) + ')'
+    
+    def __add__(self, other):
+        return xyz(self.x + other.x, self.y + other.y, self.z + other.z)
+    
+    def __sub__(self, other):
+        return xyz(self.x - other.x, self.y - other.y, self.z - other.z)
+    
+    def __mul__(self, other):
+        if isinstance(other, xyz):
+            pass
+        else:
+            return xyz(self.x * other, self.y * other, self.z * other)
+    
+    def __truediv__(self, other):
+        if isinstance(other, xyz):
+            pass
+        else:
+            return xyz(self.x / other, self.y / other, self.z / other)
 
     @staticmethod
     def crossProduct(a, b):

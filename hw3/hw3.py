@@ -111,19 +111,31 @@ def toCatmullRomSurface(crossSections):
         while t <= 1.0:
             t2 = t * t
             t3 = t2 * t
-            for p0, p1, p2, p3 in zip(sections[i].controllPoints, sections[i+1].controllPoints, sections[i+2].controllPoints, sections[i+3].controllPoints):
+            for p0, p1, p2, p3 in zip(sections[i]["controllPoints"], sections[i+1]["controllPoints"], sections[i+2]["controllPoints"], sections[i+3]["controllPoints"]):
                 x = ((2 * p1.x) + ((-p0.x + p2.x) * t) + ((2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2) + ((-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3)) * 0.5
                 y = ((2 * p1.y) + ((-p0.y + p2.y) * t) + ((2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2) + ((-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3)) * 0.5
                 z = ((2 * p1.z) + ((-p0.z + p2.z) * t) + ((2 * p0.z - 5 * p1.z + 4 * p2.z - p3.z) * t2) + ((-p0.z + 3 * p1.z - 3 * p2.z + p3.z) * t3)) * 0.5
                 controllPoints.append(xyz(x, y, z))
-            scale = ((2 * sections[i+1].scale) + ((-sections[i].scale + sections[i+2].scale) * t) + ((2 * sections[i].scale - 5 * sections[i+1].scale + 4 * sections[i+2].scale - sections[i+3].scale) * t2) + ((-sections[i].scale + 3 * sections[i+1].scale - 3 * sections[i+2].scale + sections[i+3].scale) * t3)) * 0.5
-            position = ((2 * sections[i+1].position) + ((-sections[i].position + sections[i+2].position) * t) + ((2 * sections[i].position - 5 * sections[i+1].position + 4 * sections[i+2].position - sections[i+3].position) * t2) + ((-sections[i].position + 3 * sections[i+1].position - 3 * sections[i+2].position + sections[i+3].position) * t3)) * 0.5
+            scale = ((2 * sections[i+1]["scale"]) + ((-sections[i]["scale"] + sections[i+2]["scale"]) * t) + ((2 * sections[i]["scale"] - 5 * sections[i+1]["scale"] + 4 * sections[i+2]["scale"] - sections[i+3]["scale"]) * t2) + ((-sections[i]["scale"] + 3 * sections[i+1]["scale"] - 3 * sections[i+2]["scale"] + sections[i+3]["scale"]) * t3)) * 0.5
+            position = ((sections[i+1]["position"]  * 2) + ((sections[i]["position"] * (-1) + sections[i+2]["position"]) * t) + ((sections[i]["position"] * 2 - sections[i+1]["position"] * 5 + sections[i+2]["position"] * 4 - sections[i+3]["position"]) * t2) + ((sections[i]["position"] * (-1) + sections[i+1]["position"] * 3 - sections[i+2]["position"] * 3 + sections[i+3]["position"]) * t3)) * 0.5
+            rotation = ((sections[i+1]["rotation"]  * 2) + ((sections[i]["rotation"] * (-1) + sections[i+2]["rotation"]) * t) + ((sections[i]["rotation"] * 2 - sections[i+1]["rotation"] * 5 + sections[i+2]["rotation"] * 4 - sections[i+3]["rotation"]) * t2) + ((sections[i]["rotation"] * (-1) + sections[i+1]["rotation"] * 3 - sections[i+2]["rotation"] * 3 + sections[i+3]["rotation"]) * t3)) * 0.5
+            result.append({
+                "controllPoints": controllPoints,
+                "scale": scale,
+                "rotation": rotation,
+                "position": position,
+            })
+            t += 0.1
+        i += 1
+    return result
 
 def processInputFile():
     global splinePoints
 
     f = open('input.txt', 'r')
     lines = f.readlines()
+    # for line, idx in lines:
+    #     if ()
     curveType = lines[0].split(' ')[0]
     crossSectionNum = int(lines[1].split(' ')[0])
     controllPointNum = int(lines[2].split(' ')[0])
@@ -194,8 +206,8 @@ def loadGlobalCoord():
 
 def drawSections(splinePoints):
     for idx, splinePoint in enumerate(splinePoints):
-        glBegin(GL_POLYGON)
-        glColor3f((idx+1)/5, (idx+1)/5, (idx+1)/5)
+        glBegin(GL_LINE_LOOP)
+        glColor3f((idx+1)/50, (idx+1)/50, 1)
         for point in splinePoint:
             glVertex3f(point.x, point.y, point.z)
         glEnd()
@@ -300,8 +312,7 @@ def getRealCoord(coord):
     global rq
     global rq_
     p = quaternion(0, coord.x, coord.y, coord.z)
-    p = quaternion.multiply(rq, p)
-    p = quaternion.multiply(p, rq_)
+    p = rq * p * rq_
     return xyz(p.x, p.y, p.z)
 
 def translate(x1, y1, x2, y2):
@@ -331,13 +342,15 @@ def rotate(x1, y1, x2, y2):
 
     axis = xyz.normalize(xyz.crossProduct(xyz1, xyz2))
     theta = xyz.getTheta(xyz1, xyz2)
+    print(axis)
+    print(theta)
     theta = (-1) * theta
 
     q = quaternion(math.cos(0.5 * theta), axis.x * math.sin(0.5 * theta), axis.y * math.sin(0.5 * theta), axis.z * math.sin(0.5 * theta))
     q_ = q.conjugate()
 
-    rq = quaternion.multiply(q, rq)
-    rq_ = quaternion.multiply(rq_, q_)
+    rq = q * rq
+    rq_ = rq_ * q_
     
     eye = quaternion.rotate(q, eye)
     up = quaternion.rotate(q, up)
