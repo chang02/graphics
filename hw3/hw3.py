@@ -58,7 +58,7 @@ def toBsplinePoints(realControllPoint):
     p.append(p[1])
     p.append(p[2])
     while i + 4 <= len(p):
-        t = 0.33
+        t = 0
         while t <= 1.0:
             it = 1.0 - t
             b0 = it*it*it/6
@@ -69,7 +69,7 @@ def toBsplinePoints(realControllPoint):
             y = b0 * p[i].y + b1 * p[i+1].y + b2 * p[i+2].y + b3 * p[i+3].y
             z = b0 * p[i].z + b1 * p[i+1].z + b2 * p[i+2].z + b3 * p[i+3].z
             result.append(xyz(x, y, z))
-            t += 0.33
+            t += 0.3333
         i += 1
     return result
 
@@ -81,7 +81,7 @@ def toCatmullRomPoints(realControllPoint):
     p.append(p[1])
     p.append(p[2])
     while i + 4 <= len(p):
-        t = 0.33
+        t = 0
         while t <= 1.0:
             t2 = t * t
             t3 = t2 * t
@@ -89,7 +89,7 @@ def toCatmullRomPoints(realControllPoint):
             y = ((2 * p[i+1].y) + ((-p[i].y + p[i+2].y) * t) + ((2 * p[i].y - 5 * p[i+1].y + 4 * p[i+2].y - p[i+3].y) * t2) + ((-p[i].y + 3 * p[i+1].y - 3 * p[i+2].y + p[i+3].y) * t3)) * 0.5
             z = ((2 * p[i+1].z) + ((-p[i].z + p[i+2].z) * t) + ((2 * p[i].z - 5 * p[i+1].z + 4 * p[i+2].z - p[i+3].z) * t2) + ((-p[i].z + 3 * p[i+1].z - 3 * p[i+2].z + p[i+3].z) * t3)) * 0.5
             result.append(xyz(x, y, z))
-            t += 0.33
+            t += 0.3333
         i += 1
     return result
 
@@ -98,7 +98,7 @@ def toCatmullRomSurface(crossSections):
     sections = copy.deepcopy(crossSections)
     i = 0
     while i + 4 <= len(sections):
-        t = 0.33
+        t = 0
         controllPoints = []
         scale = None
         rotation = None
@@ -120,7 +120,7 @@ def toCatmullRomSurface(crossSections):
                 "rotation": rotation,
                 "position": position,
             })
-            t += 0.33
+            t += 0.3333
         i += 1
     return result
 
@@ -128,7 +128,7 @@ def processInputFile():
     global splinePoints1
     global splinePoints2
 
-    f = open('input3.txt', 'r')
+    f = open('input4.txt', 'r')
     lines = f.readlines()
 
     # parse
@@ -237,13 +237,13 @@ def drawCatmullRomSections(sections):
     while i + 1 < len(sections):
         j = 0
         while j + 1 < len(sections[i]):
-            glBegin(GL_LINE_STRIP)
-            glColor3f(0, 1, 1)
-            glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
-            glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
-            glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
-            glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
-            glEnd()
+            # glBegin(GL_LINE_STRIP)
+            # glColor3f(0, 1, 1)
+            # glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
+            # glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
+            # glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
+            # glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
+            # glEnd()
             glBegin(GL_POLYGON)
             glColor3f(1, 0, 1)
             glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
