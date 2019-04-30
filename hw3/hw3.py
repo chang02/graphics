@@ -227,7 +227,7 @@ def loadGlobalCoord():
 def drawCrossSections(sections):
     for idx, splinePoint in enumerate(sections):
         glBegin(GL_LINE_STRIP)
-        glColor3f(1, 1, 1)
+        glColor3f(1, 0, 0)
         for point in splinePoint:
             glVertex3f(point.x, point.y, point.z)
         glEnd()
@@ -245,7 +245,7 @@ def drawCatmullRomSections(sections):
             # glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
             # glEnd()
             glBegin(GL_POLYGON)
-            glColor3f(1, 0, 1)
+            glColor3f(1, 1, 1)
             glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
             glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
             glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
@@ -267,7 +267,7 @@ def display():
 
     glTranslatef(globalTranslate.x, globalTranslate.y, globalTranslate.z)
 
-    drawCrossSections(splinePoints1)
+    # drawCrossSections(splinePoints1)
     drawCatmullRomSections(splinePoints2)
     
     glPopMatrix()
