@@ -124,11 +124,11 @@ def toCatmullRomSurface(crossSections):
         i += 1
     return result
 
-def processInputFile():
+def processInputFile(input):
     global splinePoints1
     global splinePoints2
 
-    f = open('input4.txt', 'r')
+    f = open(input, 'r')
     lines = f.readlines()
 
     # parse
@@ -237,13 +237,13 @@ def drawCatmullRomSections(sections):
     while i + 1 < len(sections):
         j = 0
         while j + 1 < len(sections[i]):
-            # glBegin(GL_LINE_STRIP)
-            # glColor3f(0, 1, 1)
-            # glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
-            # glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
-            # glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
-            # glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
-            # glEnd()
+            glBegin(GL_LINE_STRIP)
+            glColor3f(204/255, 1, 204/255)
+            glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
+            glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
+            glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
+            glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
+            glEnd()
             glBegin(GL_POLYGON)
             glColor3f(1, 1, 1)
             glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
@@ -267,7 +267,7 @@ def display():
 
     glTranslatef(globalTranslate.x, globalTranslate.y, globalTranslate.z)
 
-    # drawCrossSections(splinePoints1)
+    drawCrossSections(splinePoints1)
     drawCatmullRomSections(splinePoints2)
     
     glPopMatrix()
@@ -436,7 +436,7 @@ def glutMotion(x, y):
             mousePosY = y
 
 if __name__ == "__main__":
-    processInputFile()
+    processInputFile(sys.argv[1])
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
     glutInitWindowSize(width, height)
