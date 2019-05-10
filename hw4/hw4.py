@@ -29,6 +29,7 @@ leftButton = False
 translating = False
 dolly = False
 zoom = False
+material = False
 rq = quaternion(1, 0, 0, 0)
 rq_ = quaternion(1, 0, 0, 0)
 globalTranslate = xyz(0.0, 0.0, 0.0)
@@ -255,7 +256,28 @@ def drawCatmullRomSections(sections):
             j += 1
         i += 1
 
-def drawSurfaces(surfaces):
+def drawMaterialSurfaces(surfaces):
+    glEnable(GL_COLOR_MATERIAL)
+    
+    mat = [0.24725, 0.1995, 0.0745, 1.0]
+    glMaterialfv(GL_FRONT, GL_AMBIENT, mat)
+    mat = [0.75164, 0.60648, 0.22648]
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat)
+    mat = [0.628281, 0.555802, 0.366065]
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat)
+    shine = 0.4
+    glMaterialf(GL_FRONT, GL_SHININESS, shine * 128.0)
+    for surface in surfaces:
+        glBegin(GL_POLYGON)
+        glVertex3f(surface["points"][0].x, surface["points"][0].y, surface["points"][0].z)
+        glVertex3f(surface["points"][1].x, surface["points"][1].y, surface["points"][1].z)
+        glVertex3f(surface["points"][2].x, surface["points"][2].y, surface["points"][2].z)
+        glVertex3f(surface["points"][3].x, surface["points"][3].y, surface["points"][3].z)
+        glEnd()
+
+def drawTranslucentSurfaces(surfaces):
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     for surface in surfaces:
         glBegin(GL_POLYGON)
         glColor4f(surface["color"][0], surface["color"][1], surface["color"][2], 0.5)
@@ -271,10 +293,9 @@ def display():
     global splinePoints1
     global splinePoints2
     global eye
+    global material
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glEnable(GL_DEPTH_TEST)
     loadGlobalCoord()
 
@@ -286,13 +307,12 @@ def display():
     drawCatmullRomSections(splinePoints2)
 
     c = cube(xyz(-15, 15, 15), xyz(-15, 15, -15), xyz(15, 15, -15), xyz(15, 15, 15), xyz(-15, -15, 15), xyz(-15, -15, -15), xyz(15, -15, -15), xyz(15, -15, 15))
-    s = c.getFrontBackSurfaces(eye)
+    s = c.getSortedSurfaces(eye)
 
-    frontSurfaces = s["frontSurfaces"]
-    backSurfaces = s["backSurfaces"]
-
-    drawSurfaces(backSurfaces)
-    drawSurfaces(frontSurfaces)
+    if material:
+        drawMaterialSurfaces(s)
+    else:
+        drawTranslucentSurfaces(s)
 
     glPopMatrix()
 
@@ -302,12 +322,18 @@ def keyboard(key, x, y):
     global translating
     global dolly
     global zoom
+    global material
+    global width
+    global height
     if key == b't' or key == b'T':
         translating = True
     elif key == b'd' or key == b'D':
         dolly = True
     elif key == b'z' or key == b'Z':
         zoom = True
+    elif key == b'm' or key == b'M':
+        material = not material
+        glutPostRedisplay()
 
 def keyboardUp(key, x, y):
     global translating
