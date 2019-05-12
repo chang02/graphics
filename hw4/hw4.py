@@ -240,17 +240,27 @@ def drawCatmullRomSections(sections):
     while i + 1 < len(sections):
         j = 0
         while j + 1 < len(sections[i]):
-            glBegin(GL_LINE_STRIP)
             if sys.argv[1] == 'translucent':
                 glColor3f(204/255, 1, 204/255)
-            glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
-            glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
-            glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
-            glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
-            glEnd()
+                glBegin(GL_LINE_STRIP)
+                glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
+                glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
+                glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
+                glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
+                glEnd()
+
             glBegin(GL_POLYGON)
             if sys.argv[1] == 'translucent':
                 glColor3f(102/255, 204/255, 204/255)
+            elif sys.argv[1] == 'material':
+                mat = [0.0215, 0.1745, 0.0215, 1.0]
+                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat)
+                mat = [0.07568, 0.61424, 0.07568]
+                glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat)
+                mat = [0.633, 0.727811, 0.633]
+                glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat)
+                shine = 0.6
+                glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine * 128.0)
             glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
             glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
             glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
