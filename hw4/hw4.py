@@ -326,7 +326,8 @@ def display():
     glutSwapBuffers()
 
 def lightOn():
-    # glEnable(GL_COLOR_MATERIAL)
+    if sys.argv[1] == 'translucent':
+        glEnable(GL_COLOR_MATERIAL)
  
     ambient = [0.5, 0.5, 0.5, 0.0]
     diffuse = [0.3, 0.3, 0.3, 0.0]
@@ -365,12 +366,13 @@ def lightOn():
  
  
     glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
+    glEnable(GL_LIGHT0)    
     glEnable(GL_LIGHT1)
-    glEnable(GL_LIGHT2)
-    glEnable(GL_LIGHT3)
-    glEnable(GL_LIGHT4)
-    glEnable(GL_LIGHT5)
+    if sys.argv[1] == 'material':
+        glEnable(GL_LIGHT2)
+        glEnable(GL_LIGHT3)
+        glEnable(GL_LIGHT4)
+        glEnable(GL_LIGHT5)
     glEnable(GL_NORMALIZE)
     glEnable(GL_DEPTH_TEST)
 
@@ -548,10 +550,7 @@ if __name__ == "__main__":
     glutInitWindowPosition(0, 0)
     glutCreateWindow("HW4")
 
-    if param == 'translucent':
-        pass
-    elif param == 'material':
-        lightOn()
+    lightOn()
 
     glutReshapeFunc(reshape)
     glutDisplayFunc(display)
