@@ -270,15 +270,11 @@ def drawCatmullRomSections(sections):
         i += 1
 
 def drawMaterialSurfaces(surfaces):    
-    mat = [0.24725, 0.1995, 0.0745, 1.0]
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat)
-    mat = [0.75164, 0.60648, 0.22648]
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat)
-    mat = [0.628281, 0.555802, 0.366065]
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat)
-    shine = 0.4
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine * 128.0)
     for surface in surfaces:
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, surface["ambient"])
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, surface["diffuse"])
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, surface["specular"])
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, surface["shininess"] * 128.0)
         glBegin(GL_POLYGON)
         glVertex3f(surface["points"][0].x, surface["points"][0].y, surface["points"][0].z)
         glVertex3f(surface["points"][1].x, surface["points"][1].y, surface["points"][1].z)
@@ -330,11 +326,11 @@ def display():
     glutSwapBuffers()
 
 def lightOn():
-    # glEnable(GL_COLOR_MATERIAL)
+    glEnable(GL_COLOR_MATERIAL)
  
-    ambient = [1.0, 1.0, 1.0, 0.0]
-    diffuse = [1.0, 1.0, 1.0, 0.0]
-    specular = [1.0, 1.0, 1.0, 0.0]
+    ambient = [0.1, 0.1, 0.1, 1.0]
+    diffuse = [0.5, 0.5, 0.5, 1.0]
+    specular = [0.1, 0.1, 0.1, 1.0]
     position1 = [0.0, 1.0, 0.0, 0.0]
     position2 = [0.0, -1.0, 0.0, 0.0]
  
