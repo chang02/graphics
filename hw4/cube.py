@@ -31,13 +31,13 @@ class cube:
             "shininess": 0.4
         }
         self.surface4 = {
-            # yellow plastic
+            # yellow rubber
             "points": [point3, point7, point8, point4],
             "color": [0, 1, 0],
-            "ambient": [0.0, 0.0, 0.0, 1.0],
-            "diffuse": [0.5, 0.5, 0.0],
-            "specular": [0.6, 0.6, 0.5],
-            "shininess": 0.25
+            "ambient": [0.05, 0.05, 0.0, 1.0],
+            "diffuse": [0.5, 0.5, 0.4],
+            "specular": [0.7, 0.7, 0.04],
+            "shininess": 0.078125
         }
         self.surface5 = {
             # gold
