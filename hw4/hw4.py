@@ -326,13 +326,17 @@ def display():
     glutSwapBuffers()
 
 def lightOn():
-    glEnable(GL_COLOR_MATERIAL)
+    # glEnable(GL_COLOR_MATERIAL)
  
-    ambient = [0.1, 0.1, 0.1, 1.0]
-    diffuse = [0.5, 0.5, 0.5, 1.0]
-    specular = [0.1, 0.1, 0.1, 1.0]
+    ambient = [0.5, 0.5, 0.5, 0.0]
+    diffuse = [0.3, 0.3, 0.3, 0.0]
+    specular = [0.3, 0.3, 0.3, 0.0]
     position1 = [0.0, 1.0, 0.0, 0.0]
     position2 = [0.0, -1.0, 0.0, 0.0]
+    position3 = [1.0, 0.0, 0.0, 0.0]
+    position4 = [-1.0, 0.0, 0.0, 0.0]
+    position5 = [0.0, 0.0, 1.0, 0.0]
+    position6 = [0.0, 0.0, -1.0, 0.0]
  
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse)
@@ -342,10 +346,31 @@ def lightOn():
     glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse)
     glLightfv(GL_LIGHT1, GL_SPECULAR, specular)
     glLightfv(GL_LIGHT1, GL_POSITION, position2)
+    glLightfv(GL_LIGHT2, GL_AMBIENT, ambient)
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse)
+    glLightfv(GL_LIGHT2, GL_SPECULAR, specular)
+    glLightfv(GL_LIGHT2, GL_POSITION, position3)
+    glLightfv(GL_LIGHT3, GL_AMBIENT, ambient)
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, diffuse)
+    glLightfv(GL_LIGHT3, GL_SPECULAR, specular)
+    glLightfv(GL_LIGHT3, GL_POSITION, position4)
+    glLightfv(GL_LIGHT4, GL_AMBIENT, ambient)
+    glLightfv(GL_LIGHT4, GL_DIFFUSE, diffuse)
+    glLightfv(GL_LIGHT4, GL_SPECULAR, specular)
+    glLightfv(GL_LIGHT4, GL_POSITION, position5)
+    glLightfv(GL_LIGHT5, GL_AMBIENT, ambient)
+    glLightfv(GL_LIGHT5, GL_DIFFUSE, diffuse)
+    glLightfv(GL_LIGHT5, GL_SPECULAR, specular)
+    glLightfv(GL_LIGHT5, GL_POSITION, position6)
+ 
  
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
     glEnable(GL_LIGHT1)
+    glEnable(GL_LIGHT2)
+    glEnable(GL_LIGHT3)
+    glEnable(GL_LIGHT4)
+    glEnable(GL_LIGHT5)
     glEnable(GL_NORMALIZE)
     glEnable(GL_DEPTH_TEST)
 

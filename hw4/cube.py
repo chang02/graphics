@@ -4,22 +4,22 @@ import json
 class cube:
     def __init__(self, point1, point2, point3, point4, point5, point6, point7, point8):
         self.surface1 = {
-            # white plastic
+            # cyan plastic
             "points": [point1, point2, point3, point4],
             "color": [1, 0, 0],
-            "ambient": [0, 0, 0, 1],
-            "diffuse": [0.55, 0.55, 0.55],
-            "specular": [0.70, 0.70, 0.70],
+            "ambient": [0, 0.1, 0.06, 1],
+            "diffuse": [0.0, 0.50980392, 0.50980392],
+            "specular": [0.50196078, 0.50196078, 0.50196078],
             "shininess": 0.25
         }
         self.surface2 = {
-            # yellow rubber
+            # pearl
             "points": [point6, point5, point8, point7],
             "color": [1, 153/255, 0],
-            "ambient": [0.05, 0.05, 0, 1],
-            "diffuse": [0.5, 0.5, 0.4],
-            "specular": [0.7, 0.7, 0.04],
-            "shininess": 0.78125
+            "ambient": [0.25, 0.20725, 0.20725, 1],
+            "diffuse": [1, 0.829, 0.829],
+            "specular": [0.296648, 0.296648, 0.206648],
+            "shininess": 0.088
         }
         self.surface3 = {
             # silver
@@ -31,13 +31,13 @@ class cube:
             "shininess": 0.4
         }
         self.surface4 = {
-            # ruby
+            # yellow plastic
             "points": [point3, point7, point8, point4],
             "color": [0, 1, 0],
-            "ambient": [0.1745, 0.01175, 0.01175, 1],
-            "diffuse": [0.61424, 0.04136, 0.04136],
-            "specular": [0.727811, 0.626959, 0.626959],
-            "shininess": 0.6
+            "ambient": [0.0, 0.0, 0.0, 1.0],
+            "diffuse": [0.5, 0.5, 0.0],
+            "specular": [0.6, 0.6, 0.5],
+            "shininess": 0.25
         }
         self.surface5 = {
             # gold
@@ -49,13 +49,13 @@ class cube:
             "shininess": 0.4
         }
         self.surface6 = {
-            # bronze
+            # obsidian
             "points": [point1, point5, point6, point2],
             "color": [153/255, 0, 153/255],
-            "ambient": [0.2125, 0.1275, 0.054, 1],
-            "diffuse": [0.714, 0.4284, 0.18144],
-            "specular": [0.393548, 0.271906, 0.166721],
-            "shininess": 0.25
+            "ambient": [0.05375, 0.05, 0.06625, 1],
+            "diffuse": [0.18275, 0.17, 0.22525],
+            "specular": [0.332741, 0.328634, 0.346435],
+            "shininess": 0.3
         }
     
     def getSortedSurfaces(self, eyev):
