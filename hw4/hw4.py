@@ -325,18 +325,18 @@ def display():
 def lightOn():
     global lightPos0
     global lightPos1
-    glEnable(GL_COLOR_MATERIAL)
+    # glEnable(GL_COLOR_MATERIAL)
     # glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)    
     glEnable(GL_LIGHT1)
 
-    ambient0 = [0.3, 0.3, 0.3, 1]
-    diffuse0 = [0.5, 0.5, 0.5, 1]
+    ambient0 = [0.0, 0.0, 0.0, 1]
+    diffuse0 = [1, 1, 1, 1]
     specular0 = [1, 1, 1, 1]
 
-    ambient1 = [0.3, 0.3, 0.3, 1]
-    diffuse1 = [0.5, 0.5, 0.5, 1]
+    ambient1 = [0, 0, 0, 1]
+    diffuse1 = [1, 1, 1, 1]
     specular1 = [1, 1, 1, 1]
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient0)
