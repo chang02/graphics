@@ -300,10 +300,10 @@ def display():
     global eye
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    loadGlobalCoord()
 
     glPushMatrix()
-
-    loadGlobalCoord()
+    
     glTranslatef(globalTranslate.x, globalTranslate.y, globalTranslate.z)
 
     drawCrossSections(splinePoints1)
@@ -326,17 +326,17 @@ def lightOn():
     global lightPos0
     global lightPos1
     glEnable(GL_COLOR_MATERIAL)
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
+    # glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)    
     glEnable(GL_LIGHT1)
 
-    ambient0 = [0.2, 0.2, 0.2, 1]
-    diffuse0 = [0.3, 0.3, 0.3, 1]
+    ambient0 = [0.3, 0.3, 0.3, 1]
+    diffuse0 = [0.5, 0.5, 0.5, 1]
     specular0 = [1, 1, 1, 1]
 
-    ambient1 = [0.2, 0.2, 0.2, 1]
-    diffuse1 = [0.3, 0.3, 0.3, 1]
+    ambient1 = [0.3, 0.3, 0.3, 1]
+    diffuse1 = [0.5, 0.5, 0.5, 1]
     specular1 = [1, 1, 1, 1]
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient0)
@@ -487,8 +487,8 @@ def rotate(x1, y1, x2, y2):
     
     eye = quaternion.rotate(q, eye)
     up = quaternion.rotate(q, up)
-    nowLightPos0 = quaternion.rotate(rq_, lightPos0)
-    nowLightPos1 = quaternion.rotate(rq_, lightPos1)
+    nowLightPos0 = quaternion.rotate(rq, lightPos0)
+    nowLightPos1 = quaternion.rotate(rq, lightPos1)
 
     glLightfv(GL_LIGHT0, GL_POSITION, [nowLightPos0.x, nowLightPos0.y, nowLightPos0.z, 1])
     glLightfv( GL_LIGHT0, GL_SPOT_DIRECTION, [-nowLightPos0.x, -nowLightPos0.y, -nowLightPos0.z])
