@@ -229,8 +229,7 @@ def loadGlobalCoord():
 def drawCrossSections(sections):
     for idx, splinePoint in enumerate(sections):
         glBegin(GL_LINE_STRIP)
-        if sys.argv[1] == 'translucent':
-            glColor3f(1, 0, 0)
+        glColor3f(1, 0, 0)
         for point in splinePoint:
             glVertex3f(point.x, point.y, point.z)
         glEnd()
@@ -240,27 +239,22 @@ def drawCatmullRomSections(sections):
     while i + 1 < len(sections):
         j = 0
         while j + 1 < len(sections[i]):
-            if sys.argv[1] == 'translucent':
-                glColor3f(204/255, 1, 204/255)
-                glBegin(GL_LINE_STRIP)
-                glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
-                glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
-                glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
-                glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
-                glEnd()
+            # glColor3f(204/255, 1, 204/255)
+            # glBegin(GL_LINE_STRIP)
+            # glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
+            # glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
+            # glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
+            # glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
+            # glEnd()
 
             glBegin(GL_POLYGON)
-            if sys.argv[1] == 'translucent':
-                glColor3f(102/255, 204/255, 204/255)
-            elif sys.argv[1] == 'material':
-                mat = [0.0215, 0.1745, 0.0215, 1.0]
-                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat)
-                mat = [0.07568, 0.61424, 0.07568]
-                glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat)
-                mat = [0.633, 0.727811, 0.633]
-                glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat)
-                shine = 0.6
-                glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine * 128.0)
+            # emerald
+            # glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, [0.0215, 0.1745, 0.0215, 1.0])
+            # glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, [0.07568, 0.61424, 0.07568])
+            # glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, [0.633, 0.727811, 0.633])
+            # glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.6 * 128.0)
+            # glColor3f(0.07568, 0.61424, 0.07568)
+            glColor3f(204/255, 1, 204/255)
             glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
             glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
             glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
@@ -271,10 +265,11 @@ def drawCatmullRomSections(sections):
 
 def drawMaterialSurfaces(surfaces):    
     for surface in surfaces:
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, surface["ambient"])
-        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, surface["diffuse"])
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, surface["specular"])
-        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, surface["shininess"] * 128.0)
+        glMaterial(GL_FRONT_AND_BACK, GL_AMBIENT, surface["ambient"])
+        glMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE, surface["diffuse"])
+        glMaterial(GL_FRONT_AND_BACK, GL_SPECULAR, surface["specular"])
+        glMaterial(GL_FRONT_AND_BACK, GL_SHININESS, surface["shininess"] * 128.0)
+        glColor3f(surface["diffuse"][0], surface["diffuse"][1], surface["diffuse"][2])
         glBegin(GL_POLYGON)
         glVertex3f(surface["points"][0].x, surface["points"][0].y, surface["points"][0].z)
         glVertex3f(surface["points"][1].x, surface["points"][1].y, surface["points"][1].z)
@@ -287,8 +282,7 @@ def drawTranslucentSurfaces(surfaces):
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     for surface in surfaces:
         glBegin(GL_POLYGON)
-        if sys.argv[1] == 'translucent':
-            glColor4f(surface["color"][0], surface["color"][1], surface["color"][2], 0.5)
+        glColor4f(surface["color"][0], surface["color"][1], surface["color"][2], 0.5)
         glVertex3f(surface["points"][0].x, surface["points"][0].y, surface["points"][0].z)
         glVertex3f(surface["points"][1].x, surface["points"][1].y, surface["points"][1].z)
         glVertex3f(surface["points"][2].x, surface["points"][2].y, surface["points"][2].z)
@@ -304,75 +298,74 @@ def display():
     global material
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glEnable(GL_DEPTH_TEST)
-    loadGlobalCoord()
 
     glPushMatrix()
+
+    loadGlobalCoord()
     glTranslatef(globalTranslate.x, globalTranslate.y, globalTranslate.z)
 
     drawCrossSections(splinePoints1)
     drawCatmullRomSections(splinePoints2)
 
-    c = cube(xyz(-15, 15, 15), xyz(-15, 15, -15), xyz(15, 15, -15), xyz(15, 15, 15), xyz(-15, -15, 15), xyz(-15, -15, -15), xyz(15, -15, -15), xyz(15, -15, 15))
-    s = c.getSortedSurfaces(eye)
+    c1 = cube(xyz(-25, 10, 10), xyz(-25, 10, -10), xyz(-5, 10, -10), xyz(-5, 10, 10), xyz(-25, -10, 10), xyz(-25, -10, -10), xyz(-5, -10, -10), xyz(-5, -10, 10))
+    s1 = c1.getSortedSurfaces(eye)
+    drawMaterialSurfaces(s1)
 
-    if sys.argv[1] == 'material':
-        drawMaterialSurfaces(s)
-    elif sys.argv[1] == 'translucent':
-        drawTranslucentSurfaces(s)
+    c2 = cube(xyz(5, 10, 10), xyz(5, 10, -10), xyz(25, 10, -10), xyz(25, 10, 10), xyz(5, -10, 10), xyz(5, -10, -10), xyz(25, -10, -10), xyz(25, -10, 10))
+    s2 = c2.getSortedSurfaces(eye)
+    drawTranslucentSurfaces(s2)
+    
 
     glPopMatrix()
 
     glutSwapBuffers()
 
 def lightOn():
-    if sys.argv[1] == 'translucent':
-        glEnable(GL_COLOR_MATERIAL)
- 
-    ambient = [0.5, 0.5, 0.5, 0.0]
-    diffuse = [0.3, 0.3, 0.3, 0.0]
-    specular = [0.2, 0.2, 0.2, 0.0]
-    position1 = [0.0, 1.0, 0.0, 0.0]
-    position2 = [0.0, -1.0, 0.0, 0.0]
-    position3 = [1.0, 0.0, 0.0, 0.0]
-    position4 = [-1.0, 0.0, 0.0, 0.0]
-    position5 = [0.0, 0.0, 1.0, 0.0]
-    position6 = [0.0, 0.0, -1.0, 0.0]
- 
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse)
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specular)
-    glLightfv(GL_LIGHT0, GL_POSITION, position1)
-    glLightfv(GL_LIGHT1, GL_AMBIENT, ambient)
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse)
-    glLightfv(GL_LIGHT1, GL_SPECULAR, specular)
-    glLightfv(GL_LIGHT1, GL_POSITION, position2)
-    glLightfv(GL_LIGHT2, GL_AMBIENT, ambient)
-    glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse)
-    glLightfv(GL_LIGHT2, GL_SPECULAR, specular)
-    glLightfv(GL_LIGHT2, GL_POSITION, position3)
-    glLightfv(GL_LIGHT3, GL_AMBIENT, ambient)
-    glLightfv(GL_LIGHT3, GL_DIFFUSE, diffuse)
-    glLightfv(GL_LIGHT3, GL_SPECULAR, specular)
-    glLightfv(GL_LIGHT3, GL_POSITION, position4)
-    glLightfv(GL_LIGHT4, GL_AMBIENT, ambient)
-    glLightfv(GL_LIGHT4, GL_DIFFUSE, diffuse)
-    glLightfv(GL_LIGHT4, GL_SPECULAR, specular)
-    glLightfv(GL_LIGHT4, GL_POSITION, position5)
-    glLightfv(GL_LIGHT5, GL_AMBIENT, ambient)
-    glLightfv(GL_LIGHT5, GL_DIFFUSE, diffuse)
-    glLightfv(GL_LIGHT5, GL_SPECULAR, specular)
-    glLightfv(GL_LIGHT5, GL_POSITION, position6)
- 
- 
+    glEnable(GL_COLOR_MATERIAL)
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)    
     glEnable(GL_LIGHT1)
-    if sys.argv[1] == 'material':
-        glEnable(GL_LIGHT2)
-        glEnable(GL_LIGHT3)
-        glEnable(GL_LIGHT4)
-        glEnable(GL_LIGHT5)
+    glEnable(GL_LIGHT2)
+
+    ambient0 = [0.0, 0.0, 0.0, 0]
+    diffuse0 = [1, 1, 1, 0]
+    specular0 = [1, 1, 1, 0]
+    position0 = [100, 0, 0, 0]
+
+    ambient1 = [0.0, 0.0, 0.0, 0]
+    diffuse1 = [1, 1, 1, 0]
+    specular1 = [1, 1, 1, 0]
+    position1 = [-100, 0, 0, 0]
+
+    ambient2 = [0.5, 0.5, 0.5, 0]
+    diffuse2 = [1, 1, 1, 0]
+    specular2 = [1, 1, 1, 0]
+    position2 = [0, -100, 0, 0]
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient0)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse0)
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular0)
+    glLightfv(GL_LIGHT0, GL_POSITION, position0)
+    glLightf( GL_LIGHT0, GL_SPOT_CUTOFF , 50.0 )
+    glLightf( GL_LIGHT0, GL_SPOT_EXPONENT, 50.0 )
+    glLightfv( GL_LIGHT0, GL_SPOT_DIRECTION, [-1, 0, 0])
+    glLightfv(GL_LIGHT1, GL_AMBIENT, ambient1)
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse1)
+    glLightfv(GL_LIGHT1, GL_SPECULAR, specular1)
+    glLightfv(GL_LIGHT1, GL_POSITION, position1)
+    glLightf( GL_LIGHT1, GL_SPOT_CUTOFF , 50.0 )
+    glLightf( GL_LIGHT1, GL_SPOT_EXPONENT, 50.0 )
+    glLightfv( GL_LIGHT1, GL_SPOT_DIRECTION, [1, 0, 0])
+    glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2)
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2)
+    glLightfv(GL_LIGHT2, GL_SPECULAR, specular2)
+    glLightfv(GL_LIGHT2, GL_POSITION, position2)
+    glLightf( GL_LIGHT2, GL_SPOT_CUTOFF , 50.0 )
+    glLightf( GL_LIGHT2, GL_SPOT_EXPONENT, 50.0 )
+    glLightfv( GL_LIGHT2, GL_SPOT_DIRECTION, [0, 1, 0])
+
+    
     glEnable(GL_NORMALIZE)
     glEnable(GL_DEPTH_TEST)
 
@@ -431,8 +424,6 @@ def specialKeyboard(key, x, y):
             if perspectiveAngle > 80:
                 perspectiveAngle = 80
             reshape(width, height)
-
-    loadGlobalCoord()
     glutPostRedisplay()
 
 def getSphereCoord(x, y):
@@ -508,7 +499,6 @@ def rotate(x1, y1, x2, y2):
     eye = quaternion.rotate(q, eye)
     up = quaternion.rotate(q, up)
 
-    loadGlobalCoord()
     glutPostRedisplay()
 
 def glutMouse(button, state, x, y):
@@ -541,7 +531,6 @@ def glutMotion(x, y):
             mousePosY = y
 
 if __name__ == "__main__":
-    param = sys.argv[1]
 
     processInputFile()
     glutInit(sys.argv)
