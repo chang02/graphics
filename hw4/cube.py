@@ -25,9 +25,9 @@ class cube:
             # silver
             "points": [point2, point6, point7, point3],
             "color": [1, 1, 0],
-            "ambient": [0.19225, 0.19225, 0.19225, 1],
-            "diffuse": [0.50754, 0.50754, 0.50754],
-            "specular": [0.508273, 0.508273, 0.508273],
+            "ambient": [0.24725, 0.1995, 0.0745, 1.0],
+            "diffuse": [0.75164, 0.60648, 0.22648],
+            "specular": [0.628281, 0.555802, 0.366065],
             "shininess": 0.4
         }
         self.surface4 = {
@@ -43,9 +43,9 @@ class cube:
             # gold
             "points": [point4, point8, point5, point1],
             "color": [0, 0, 1],
-            "ambient": [0.24725, 0.1995, 0.0745, 1.0],
-            "diffuse": [0.75164, 0.60648, 0.22648],
-            "specular": [0.628281, 0.555802, 0.366065],
+            "ambient": [0.19225, 0.19225, 0.19225, 1],
+            "diffuse": [0.50754, 0.50754, 0.50754],
+            "specular": [0.508273, 0.508273, 0.508273],
             "shininess": 0.4
         }
         self.surface6 = {

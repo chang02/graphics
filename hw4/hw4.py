@@ -29,7 +29,10 @@ leftButton = False
 translating = False
 dolly = False
 zoom = False
-material = False
+
+lightPos0 = xyz(0, 0, 50)
+lightPos1 = xyz(0, 0, -50)
+
 rq = quaternion(1, 0, 0, 0)
 rq_ = quaternion(1, 0, 0, 0)
 globalTranslate = xyz(0.0, 0.0, 0.0)
@@ -295,7 +298,6 @@ def display():
     global splinePoints1
     global splinePoints2
     global eye
-    global material
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -321,50 +323,36 @@ def display():
     glutSwapBuffers()
 
 def lightOn():
+    global lightPos0
+    global lightPos1
     glEnable(GL_COLOR_MATERIAL)
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)    
     glEnable(GL_LIGHT1)
-    glEnable(GL_LIGHT2)
 
-    ambient0 = [0.0, 0.0, 0.0, 0]
-    diffuse0 = [1, 1, 1, 0]
-    specular0 = [1, 1, 1, 0]
-    position0 = [100, 0, 0, 0]
+    ambient0 = [0.2, 0.2, 0.2, 1]
+    diffuse0 = [0.3, 0.3, 0.3, 1]
+    specular0 = [1, 1, 1, 1]
 
-    ambient1 = [0.0, 0.0, 0.0, 0]
-    diffuse1 = [1, 1, 1, 0]
-    specular1 = [1, 1, 1, 0]
-    position1 = [-100, 0, 0, 0]
-
-    ambient2 = [0.5, 0.5, 0.5, 0]
-    diffuse2 = [1, 1, 1, 0]
-    specular2 = [1, 1, 1, 0]
-    position2 = [0, -100, 0, 0]
+    ambient1 = [0.2, 0.2, 0.2, 1]
+    diffuse1 = [0.3, 0.3, 0.3, 1]
+    specular1 = [1, 1, 1, 1]
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient0)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse0)
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular0)
-    glLightfv(GL_LIGHT0, GL_POSITION, position0)
+    glLightfv(GL_LIGHT0, GL_POSITION, [lightPos0.x, lightPos0.y, lightPos0.z, 1])
     glLightf( GL_LIGHT0, GL_SPOT_CUTOFF , 50.0 )
     glLightf( GL_LIGHT0, GL_SPOT_EXPONENT, 50.0 )
-    glLightfv( GL_LIGHT0, GL_SPOT_DIRECTION, [-1, 0, 0])
+    glLightfv( GL_LIGHT0, GL_SPOT_DIRECTION, [-lightPos0.x, -lightPos0.y, -lightPos0.z])
     glLightfv(GL_LIGHT1, GL_AMBIENT, ambient1)
     glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse1)
     glLightfv(GL_LIGHT1, GL_SPECULAR, specular1)
-    glLightfv(GL_LIGHT1, GL_POSITION, position1)
+    glLightfv(GL_LIGHT1, GL_POSITION, [lightPos1.x, lightPos1.y, lightPos1.z, 1])
     glLightf( GL_LIGHT1, GL_SPOT_CUTOFF , 50.0 )
     glLightf( GL_LIGHT1, GL_SPOT_EXPONENT, 50.0 )
-    glLightfv( GL_LIGHT1, GL_SPOT_DIRECTION, [1, 0, 0])
-    glLightfv(GL_LIGHT2, GL_AMBIENT, ambient2)
-    glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse2)
-    glLightfv(GL_LIGHT2, GL_SPECULAR, specular2)
-    glLightfv(GL_LIGHT2, GL_POSITION, position2)
-    glLightf( GL_LIGHT2, GL_SPOT_CUTOFF , 50.0 )
-    glLightf( GL_LIGHT2, GL_SPOT_EXPONENT, 50.0 )
-    glLightfv( GL_LIGHT2, GL_SPOT_DIRECTION, [0, 1, 0])
-
+    glLightfv( GL_LIGHT1, GL_SPOT_DIRECTION, [-lightPos1.x, -lightPos1.y, -lightPos1.z])
     
     glEnable(GL_NORMALIZE)
     glEnable(GL_DEPTH_TEST)
@@ -373,7 +361,6 @@ def keyboard(key, x, y):
     global translating
     global dolly
     global zoom
-    global material
     global width
     global height
     if key == b't' or key == b'T':
@@ -480,6 +467,8 @@ def rotate(x1, y1, x2, y2):
     global up
     global rq
     global rq_
+    global lightPos0
+    global lightPos1
 
     xyz1 = getSphereCoord(x1, y1)
     xyz2 = getSphereCoord(x2, y2)
@@ -498,6 +487,14 @@ def rotate(x1, y1, x2, y2):
     
     eye = quaternion.rotate(q, eye)
     up = quaternion.rotate(q, up)
+    nowLightPos0 = quaternion.rotate(rq_, lightPos0)
+    nowLightPos1 = quaternion.rotate(rq_, lightPos1)
+
+    glLightfv(GL_LIGHT0, GL_POSITION, [nowLightPos0.x, nowLightPos0.y, nowLightPos0.z, 1])
+    glLightfv( GL_LIGHT0, GL_SPOT_DIRECTION, [-nowLightPos0.x, -nowLightPos0.y, -nowLightPos0.z])
+
+    glLightfv(GL_LIGHT1, GL_POSITION, [nowLightPos1.x, nowLightPos1.y, nowLightPos1.z, 1])
+    glLightfv( GL_LIGHT1, GL_SPOT_DIRECTION, [-nowLightPos1.x, -nowLightPos1.y, -nowLightPos1.z])
 
     glutPostRedisplay()
 
