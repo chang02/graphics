@@ -30,8 +30,12 @@ translating = False
 dolly = False
 zoom = False
 
-lightPos0 = xyz(0, 0, 50)
-lightPos1 = xyz(0, 0, -50)
+lightPos0 = xyz(100, 0, 0)
+lightPos1 = xyz(-100, 0, 0)
+lightPos2 = xyz(0, 0, 100)
+lightPos3 = xyz(0, 0, -100)
+lightPos4 = xyz(0, 100, 0)
+lightPos5 = xyz(0, -100, 0)
 
 rq = quaternion(1, 0, 0, 0)
 rq_ = quaternion(1, 0, 0, 0)
@@ -252,12 +256,12 @@ def drawCatmullRomSections(sections):
 
             glBegin(GL_POLYGON)
             # emerald
-            # glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, [0.0215, 0.1745, 0.0215, 1.0])
-            # glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, [0.07568, 0.61424, 0.07568])
-            # glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, [0.633, 0.727811, 0.633])
-            # glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.6 * 128.0)
-            # glColor3f(0.07568, 0.61424, 0.07568)
-            glColor3f(204/255, 1, 204/255)
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, [0.0215, 0.1745, 0.0215, 1.0])
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, [0.07568, 0.61424, 0.07568])
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, [0.633, 0.727811, 0.633])
+            glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.6 * 128.0)
+            glColor3f(0.07568, 0.61424, 0.07568)
+            # glColor3f(204/255, 1, 204/255)
             glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
             glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
             glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
@@ -292,6 +296,67 @@ def drawTranslucentSurfaces(surfaces):
         glVertex3f(surface["points"][3].x, surface["points"][3].y, surface["points"][3].z)
         glEnd()
 
+def lightOn():
+    global lightPos0
+    global lightPos1
+    global lightPos2
+    global lightPos3
+    global lightPos4
+    global lightPos5
+
+    glClearColor( 0.0, 0.0, 0.0, 0.0 )
+    glEnable(GL_COLOR_MATERIAL)
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)    
+    glEnable(GL_LIGHT1)
+    glEnable(GL_LIGHT2)    
+    glEnable(GL_LIGHT3)
+    glEnable(GL_LIGHT4)    
+    glEnable(GL_LIGHT5)
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.0, 0.0, 0.0, 1])
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, [1, 1, 1, 1])
+    glLightfv(GL_LIGHT0, GL_SPECULAR, [1, 1, 1, 1])
+    glLightfv(GL_LIGHT0, GL_POSITION, [lightPos0.x, lightPos0.y, lightPos0.z, 1])
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT, [0, 0, 0, 1])
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, [1, 1, 1, 1])
+    glLightfv(GL_LIGHT1, GL_SPECULAR, [1, 1, 1, 1])
+    glLightfv(GL_LIGHT1, GL_POSITION, [lightPos1.x, lightPos1.y, lightPos1.z, 1])
+    
+    glLightfv(GL_LIGHT2, GL_AMBIENT, [0.0, 0.0, 0.0, 1])
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, [1, 1, 1, 1])
+    glLightfv(GL_LIGHT2, GL_SPECULAR, [1, 1, 1, 1])
+    glLightfv(GL_LIGHT2, GL_POSITION, [lightPos2.x, lightPos2.y, lightPos2.z, 1])
+    
+    glLightfv(GL_LIGHT3, GL_AMBIENT, [0, 0, 0, 1])
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, [1, 1, 1, 1])
+    glLightfv(GL_LIGHT3, GL_SPECULAR, [1, 1, 1, 1])
+    glLightfv(GL_LIGHT3, GL_POSITION, [lightPos3.x, lightPos3.y, lightPos3.z, 1])
+
+    glLightfv(GL_LIGHT4, GL_AMBIENT, [0.2, 0.2, 0.2, 1])
+    glLightfv(GL_LIGHT4, GL_DIFFUSE, [0, 0, 0, 1])
+    glLightfv(GL_LIGHT4, GL_SPECULAR, [0, 0, 0, 1])
+    glLightfv(GL_LIGHT4, GL_POSITION, [lightPos2.x, lightPos2.y, lightPos2.z, 1])
+    
+    glLightfv(GL_LIGHT5, GL_AMBIENT, [0.2, 0.2, 0.2, 1])
+    glLightfv(GL_LIGHT5, GL_DIFFUSE, [0, 0, 0, 1])
+    glLightfv(GL_LIGHT5, GL_SPECULAR, [0, 0, 0, 1])
+    glLightfv(GL_LIGHT5, GL_POSITION, [lightPos3.x, lightPos3.y, lightPos3.z, 1])
+    
+    glEnable(GL_NORMALIZE)
+    glEnable(GL_DEPTH_TEST)
+
+def lightOff():
+    glDisable(GL_LIGHTING)
+    glDisable(GL_LIGHT0)
+    glDisable(GL_LIGHT1)
+    glDisable(GL_LIGHT2)
+    glDisable(GL_LIGHT3)
+    glDisable(GL_LIGHT4)
+    glDisable(GL_LIGHT5)
+    glDisable(GL_NORMALIZE)
 
 def display():
     global globalTranslate
@@ -320,42 +385,10 @@ def display():
 
     glPopMatrix()
 
+    lightOff()
+    lightOn()
+
     glutSwapBuffers()
-
-def lightOn():
-    global lightPos0
-    global lightPos1
-    # glEnable(GL_COLOR_MATERIAL)
-    # glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)    
-    glEnable(GL_LIGHT1)
-
-    ambient0 = [0.0, 0.0, 0.0, 1]
-    diffuse0 = [1, 1, 1, 1]
-    specular0 = [1, 1, 1, 1]
-
-    ambient1 = [0, 0, 0, 1]
-    diffuse1 = [1, 1, 1, 1]
-    specular1 = [1, 1, 1, 1]
-
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient0)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse0)
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specular0)
-    glLightfv(GL_LIGHT0, GL_POSITION, [lightPos0.x, lightPos0.y, lightPos0.z, 1])
-    glLightf( GL_LIGHT0, GL_SPOT_CUTOFF , 50.0 )
-    glLightf( GL_LIGHT0, GL_SPOT_EXPONENT, 50.0 )
-    glLightfv( GL_LIGHT0, GL_SPOT_DIRECTION, [-lightPos0.x, -lightPos0.y, -lightPos0.z])
-    glLightfv(GL_LIGHT1, GL_AMBIENT, ambient1)
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse1)
-    glLightfv(GL_LIGHT1, GL_SPECULAR, specular1)
-    glLightfv(GL_LIGHT1, GL_POSITION, [lightPos1.x, lightPos1.y, lightPos1.z, 1])
-    glLightf( GL_LIGHT1, GL_SPOT_CUTOFF , 50.0 )
-    glLightf( GL_LIGHT1, GL_SPOT_EXPONENT, 50.0 )
-    glLightfv( GL_LIGHT1, GL_SPOT_DIRECTION, [-lightPos1.x, -lightPos1.y, -lightPos1.z])
-    
-    glEnable(GL_NORMALIZE)
-    glEnable(GL_DEPTH_TEST)
 
 def keyboard(key, x, y):
     global translating
@@ -469,6 +502,10 @@ def rotate(x1, y1, x2, y2):
     global rq_
     global lightPos0
     global lightPos1
+    global lightPos2
+    global lightPos3
+    global lightPos4
+    global lightPos5
 
     xyz1 = getSphereCoord(x1, y1)
     xyz2 = getSphereCoord(x2, y2)
@@ -487,14 +524,12 @@ def rotate(x1, y1, x2, y2):
     
     eye = quaternion.rotate(q, eye)
     up = quaternion.rotate(q, up)
-    nowLightPos0 = quaternion.rotate(rq, lightPos0)
-    nowLightPos1 = quaternion.rotate(rq, lightPos1)
-
-    glLightfv(GL_LIGHT0, GL_POSITION, [nowLightPos0.x, nowLightPos0.y, nowLightPos0.z, 1])
-    glLightfv( GL_LIGHT0, GL_SPOT_DIRECTION, [-nowLightPos0.x, -nowLightPos0.y, -nowLightPos0.z])
-
-    glLightfv(GL_LIGHT1, GL_POSITION, [nowLightPos1.x, nowLightPos1.y, nowLightPos1.z, 1])
-    glLightfv( GL_LIGHT1, GL_SPOT_DIRECTION, [-nowLightPos1.x, -nowLightPos1.y, -nowLightPos1.z])
+    lightPos0 = quaternion.rotate(q, lightPos0)
+    lightPos1 = quaternion.rotate(q, lightPos1)
+    lightPos2 = quaternion.rotate(q, lightPos2)
+    lightPos3 = quaternion.rotate(q, lightPos3)
+    lightPos4 = quaternion.rotate(q, lightPos4)
+    lightPos5 = quaternion.rotate(q, lightPos5)
 
     glutPostRedisplay()
 
@@ -535,8 +570,6 @@ if __name__ == "__main__":
     glutInitWindowSize(width, height)
     glutInitWindowPosition(0, 0)
     glutCreateWindow("HW4")
-
-    lightOn()
 
     glutReshapeFunc(reshape)
     glutDisplayFunc(display)
