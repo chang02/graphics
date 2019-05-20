@@ -1,4 +1,4 @@
-import Dot
+import Intersection
 import Vector
 import Sphere
 import Plane

@@ -1,5 +1,4 @@
 import math
-import Dot
 
 class Vector:
     def __init__(self, x, y, z):
@@ -11,7 +10,7 @@ class Vector:
         return self.x * another.x + self.y * another.y + self.z * another.z
     
     def cross(self, another):
-        return Dot(self.y * another.z - self.z * another.y, self.z * another.b - self.x * another.z, self.x * another.y - self.y * another.x)
+        return Vector(self.y * another.z - self.z * another.y, self.z * another.b - self.x * another.z, self.x * another.y - self.y * another.x)
 
     def magnitude(self):
         return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
