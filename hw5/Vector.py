@@ -6,9 +6,11 @@ class Vector:
         self.y = y
         self.z = z
     
+    @staticmethod
     def dot(self, another):
         return self.x * another.x + self.y * another.y + self.z * another.z
     
+    @staticmethod
     def cross(self, another):
         return Vector(self.y * another.z - self.z * another.y, self.z * another.b - self.x * another.z, self.x * another.y - self.y * another.x)
 
