@@ -1,5 +1,5 @@
-import Vector
-import Intersection
+from Vector import Vector
+from Intersection import Intersection
 import math
 
 class Sphere:
