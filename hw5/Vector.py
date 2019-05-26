@@ -6,13 +6,16 @@ class Vector:
         self.y = y
         self.z = z
     
-    @staticmethod
-    def dot(self, another):
-        return self.x * another.x + self.y * another.y + self.z * another.z
+    def __str__(self):
+        return "("+str(self.x)+","+str(self.y)+","+str(self.z)+")"
     
     @staticmethod
-    def cross(self, another):
-        return Vector(self.y * another.z - self.z * another.y, self.z * another.b - self.x * another.z, self.x * another.y - self.y * another.x)
+    def dot(a, b):
+        return a.x * b.x + a.y * b.y + a.z * b.z
+    
+    @staticmethod
+    def cross(a, b):
+        return Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
 
     def magnitude(self):
         return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
@@ -25,7 +28,7 @@ class Vector:
         return Vector(self.x + another.x, self.y + another.y, self.z + another.z)
     
     def __sub__(self, another):
-        return Vector(self.x - another.x, self.y - another.y, self.z + another.z)
+        return Vector(self.x - another.x, self.y - another.y, self.z - another.z)
     
     def __mul__(self, scalar):
         assert type(scalar) == int or type(scalar) == float
