@@ -2,10 +2,11 @@ from Vector import Vector
 from Intersection import Intersection
 
 class Plane:
-    def __init__(self, point, normal, color):
+    def __init__(self, point, normal, color, typ):
         self.normal = normal
         self.point = point
         self.color = color
+        self.type = typ
     
     def getIntersection(self, ray):
         dot = Vector.dot(self.normal, ray.direction)

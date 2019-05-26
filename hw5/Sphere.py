@@ -3,10 +3,11 @@ from Intersection import Intersection
 import math
 
 class Sphere:
-    def __init__(self, center, radius, color):
+    def __init__(self, center, radius, color, typ):
         self.center = center
         self.radius = radius
         self.color = color
+        self.type = typ
     
     def normal(self, surfacePoint):
         return (surfacePoint - self.center).normal()
@@ -21,4 +22,4 @@ class Sphere:
             return None
         else:
             t = (-b - math.sqrt(discriminant)) / (2.0 * a)
-            return Intersection(ray.origin, t, self.normal(ray.origin + ray.direction * t), self)
+            return Intersection(ray.origin + ray.direction * t, t, self.normal(ray.origin + ray.direction * t), self)

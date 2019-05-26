@@ -18,7 +18,7 @@ class Vector:
         return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
     
     def normal(self):
-        magnitude = self.magnitude
+        magnitude = self.magnitude()
         return Vector(self.x / magnitude, self.y / magnitude, self.z / magnitude)
     
     def __add__(self, another):
@@ -28,5 +28,5 @@ class Vector:
         return Vector(self.x - another.x, self.y - another.y, self.z + another.z)
     
     def __mul__(self, scalar):
-        assert type(another) == int or type(another) == float
+        assert type(scalar) == int or type(scalar) == float
         return Vector(self.x * scalar, self.y * scalar, self.z * scalar)
