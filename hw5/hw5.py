@@ -27,9 +27,10 @@ def getColor(ray, eye):
     for obj in objects:
         if obj.getIntersection(ray) != None:
             intersections.append(obj.getIntersection(ray))
+    print(intersections)
     if len(intersections) == 0:
-            color = backgroundColor
-            return color
+        color = backgroundColor
+        return color
     else:
         minIntersection = getMinIntersection(intersections)
         lightVector = (lightSource - minIntersection.point).normal()
