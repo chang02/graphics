@@ -24,4 +24,7 @@ class Sphere:
             return None
         else:
             t = (-b - math.sqrt(discriminant)) / (2.0 * a)
-            return Intersection(ray.origin + ray.direction * t, t, self.normal(ray.origin + ray.direction * t), self)
+            if t > 0.0001:
+                return Intersection(ray.origin + ray.direction * t, t, self.normal(ray.origin + ray.direction * t), self)
+            else:
+                return None
