@@ -3,8 +3,8 @@ from Intersection import Intersection
 
 class Plane:
     def __init__(self, point, normal, color, typ):
-        self.normal = normal
         self.point = point
+        self.normal = normal
         self.color = color
         self.type = typ
     
