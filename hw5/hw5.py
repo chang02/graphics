@@ -13,8 +13,11 @@ backgroundColor = Vector(0.1, 0.1, 0.1)
 
 objects = []
 
-objects.append(Sphere(Vector(0, -180, 500), 80.0, Vector(255,0, 0), 'default'))
-objects.append(Plane(Vector(0, -260, 500), Vector(0, 1, 0), Vector(200, 200, 200), 'default'))
+objects.append(Sphere(Vector(0, -180, 500), 80.0, Vector(0, 200, 0), Vector(0, 200, 0), Vector(0, 200, 0), 'default'))
+objects.append(Plane(Vector(0, -260, 500), Vector(0, 1, 0), Vector(200, 200, 0), Vector(200, 200, 0), Vector(200, 200, 0), 'default', Vector(-10000, -261, -10000), Vector(10000, -259, 10000)))
+objects.append(Plane(Vector(0, -260, 1000), Vector(2, 0, -1).normal(), Vector(0, 0, 0), Vector(0, 0, 0), Vector(255, 255, 255), 'reflection', Vector(-300, -260, 200), Vector(0, 50, 1000)))
+objects.append(Plane(Vector(0, -260, 1000), Vector(-2, 0, -1).normal(), Vector(0, 0, 0), Vector(0, 0, 0),  Vector(255, 255, 255), 'reflection', Vector(0, -260, 200), Vector(300, 50, 1000)))
+
 def getIntersections(ray):
     intersections = []
     for obj in objects:
@@ -49,15 +52,24 @@ def getColor(ray, eye):
         minIntersection = getMinIntersection(intersections)
         lVector = (lightSource - minIntersection.point).normal()
         nVector = minIntersection.normal
-        rVector = (nVector * (Vector.dot(lVector, nVector) * 2) - lVector).normal()
         vVector = (eye - minIntersection.point).normal()
+        rVector = (nVector * (Vector.dot(lVector, nVector) * 2) - lVector).normal()
+        hVector = (nVector * (Vector.dot(vVector, nVector) * 2) - vVector).normal()
         if minIntersection.obj.type == 'default':
             if isShade(minIntersection.obj, minIntersection.point):
-                color = minIntersection.obj.color * 0.1
+                color = minIntersection.obj.ambColor * 0.1
                 return color
             else:
-                color = minIntersection.obj.color * 0.1 + (minIntersection.obj.color * max(0, Vector.dot(nVector, lVector))) * 0.3 + (minIntersection.obj.color * max(0, Vector.dot(rVector, vVector)**15) * 0.5)
+                color = minIntersection.obj.ambColor * 0.1 + (minIntersection.obj.difColor * max(0, Vector.dot(nVector, lVector))) * 0.3 + (minIntersection.obj.speColor * max(0, Vector.dot(rVector, vVector)**15) * 0.5)
                 return color
+        elif minIntersection.obj.type == 'reflection':
+            newRay = Ray(minIntersection.point, hVector)
+            newEye = minIntersection.point
+            color = getColor(newRay, newEye)
+            return color
+        else:
+            color = backgroundColor
+            return color
 
 image = Image.new("RGB",(width,height),(255,255,255))
 im = image.load()
