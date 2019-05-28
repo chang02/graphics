@@ -1,16 +1,19 @@
 from Vector import Vector
 from Intersection import Intersection
+from PIL import Image
 
 class Plane:
-    def __init__(self, point, normal, ambColor, difColor, speColor, typ, minxyz, maxxyz):
+    def __init__(self, point, normal, color, typ, minxyz, maxxyz, texture):
         self.point = point
         self.normal = normal
-        self.ambColor = ambColor
-        self.difColor = difColor
-        self.speColor = speColor
+        self.color = color
         self.type = typ
         self.minxyz = minxyz
         self.maxxyz = maxxyz
+        self.texture = texture
+        if texture != None:
+            self.im = Image.open(texture)
+            self.px = self.im.load()
     
     def getIntersection(self, ray):
         dot = Vector.dot(self.normal, ray.direction)
@@ -27,3 +30,11 @@ class Plane:
                     return None
             else:
                 return None
+        
+    def getColor(self, point):
+        if self.texture == None:
+            return self.color
+        else:
+            width, height = self.im.size
+            r, g, b = self.px[point.x % width, point.z % height]
+            return Vector(r, g, b)
