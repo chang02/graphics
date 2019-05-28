@@ -38,7 +38,7 @@ class Plane:
             width, height = self.im.size
             u = Vector(self.normal.y, self.normal.x * (-1), 0)
             v = Vector.cross(u, self.normal)
-            uCoord = Vector.dot(u, point) % width
-            vCoord = Vector.dot(v, point) % height
+            uCoord = Vector.dot(u, point) % width - 1
+            vCoord = Vector.dot(v, point) % height - 1
             r, g, b = self.px[uCoord, vCoord]
             return Vector(r, g, b)

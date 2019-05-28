@@ -8,7 +8,7 @@ import math
 
 width = 900
 height = 600
-camera = Vector(0, 100, 0)
+camera = Vector(0, 0, 0)
 lightSource = Vector(-300, 300, 0)
 backgroundColor = Vector(0.1, 0.1, 0.1)
 
@@ -19,14 +19,14 @@ objects.append(Sphere(Vector(0, -200, 520), 40.0, Vector(255, 0, 255), 'default'
 
 objects.append(Plane(Vector(0, -240, 500), Vector(0, 1, 0), None, 'default', Vector(-10000, -241, -10000), Vector(10000, -239, 10000), "wood.jpeg"))
 
-objects.append(Plane(Vector(0, -240, 800), Vector(1.5, 0, -1).normal(), Vector(255, 255, 255), 'reflection', Vector(-220, -239, 100), Vector(0, 10, 800), None))
-objects.append(Plane(Vector(0, -240, 800), Vector(-1.5, 0, -1).normal(), Vector(255, 255, 255), 'reflection', Vector(0, -239, 100), Vector(220, 10, 800), None))
+objects.append(Plane(Vector(0, -240, 800), Vector(1.5, 0, -1).normal(), Vector(255, 255, 255), 'reflection', Vector(-220, -239, 100), Vector(0, -50, 800), None))
+objects.append(Plane(Vector(0, -240, 800), Vector(-1.5, 0, -1).normal(), Vector(255, 255, 255), 'reflection', Vector(0, -239, 100), Vector(220, -50, 800), None))
 
 objects.append(Sphere(Vector(-500, -200, 620), 50, Vector(255, 0, 0), 'default', None))
 objects.append(Sphere(Vector(-400, -200, 350), 50, Vector(255, 255, 0), 'default', None))
 objects.append(Sphere(Vector(-450, -200, 500), 50, Vector(200, 200, 200), 'reflection_refraction', None))
 
-objects.append(Sphere(Vector(400, 50, 350), 50, None, 'default', "earth.jpeg"))
+objects.append(Sphere(Vector(400, -100, 500), 50, None, 'default', "earth.jpeg"))
 
 def getIntersections(ray):
     intersections = []
@@ -92,7 +92,7 @@ def getColor(ray, eye, recur):
                 newRay2 = Ray(point, hVector)
                 newEye2 = point
                 color2 = getColor(newRay2, newEye2, recur + 1)
-                return color1 * 0.5 + color2 * 0.5
+                return color1 * 0.6 + color2 * 0.4
             elif ndotv < 0:
                 nr = 1 / 1.2
                 nVector = nVector * (-1)
@@ -114,27 +114,6 @@ def getColor(ray, eye, recur):
             else:
                 color = backgroundColor * 0.1
                 return color
-        # elif minIntersection.obj.type == 'refraction':
-        #     ndotv = Vector.dot(nVector, vVector)
-        #     if ndotv > 0:
-        #         nr = 1 / 1.1
-        #         d = nVector * (ndotv * nr - math.sqrt(1 - (nr * nr * (1 - (ndotv * ndotv))))) - (vVector * nr)
-        #         newRay = Ray(point, d)
-        #         newEye = point
-        #         color = getColor(newRay, newEye, recur + 1)
-        #         return color
-        #     elif ndotv < 0:
-        #         nr = 1.1 / 1
-        #         nVector = nVector * (-1)
-        #         d = nVector * (ndotv * nr - math.sqrt(1 - (nr * nr * (1 - (ndotv * ndotv))))) - (vVector * nr)
-        #         newRay = Ray(point, d)
-        #         newEye = point
-        #         color = getColor(newRay, newEye, recur + 1)
-        #         return color
-
-        #     else:
-        #         color = backgroundColor * 0.1
-        #         return color
                             
         else:
             color = backgroundColor * 0.1
@@ -146,7 +125,8 @@ im = image.load()
 for x in range(height):
     print('row', x)
     for y in range(width):
-        ray = Ray(camera, (Vector(y - (width / 2), (height / 2) - x, 300) - camera).normal())
+        fov = 3.1416 / 2
+        ray = Ray(camera, (Vector(y - (width / 2), (height / 2) - x, (height / 2) / math.tan(fov * 0.5)) - camera).normal())
         color = getColor(ray, camera, 0)
         im[y,x] = (round(color.x), round(color.y), round(color.z))
 
