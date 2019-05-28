@@ -17,13 +17,16 @@ objects = []
 objects.append(Sphere(Vector(0, -200, 630), 40.0, Vector(255, 0, 0), 'default', None))
 objects.append(Sphere(Vector(0, -200, 520), 40.0, Vector(255, 0, 255), 'default', None))
 
-objects.append(Plane(Vector(0, -240, 500), Vector(0, 1, 0), Vector(0, 255, 255), 'default', Vector(-10000, -241, -10000), Vector(10000, -239, 10000), "texture.jpeg"))
+objects.append(Plane(Vector(0, -240, 500), Vector(0, 1, 0), None, 'default', Vector(-10000, -241, -10000), Vector(10000, -239, 10000), "wood.jpeg"))
+
 objects.append(Plane(Vector(0, -240, 800), Vector(1.5, 0, -1).normal(), Vector(255, 255, 255), 'reflection', Vector(-220, -239, 100), Vector(0, 10, 800), None))
 objects.append(Plane(Vector(0, -240, 800), Vector(-1.5, 0, -1).normal(), Vector(255, 255, 255), 'reflection', Vector(0, -239, 100), Vector(220, 10, 800), None))
 
 objects.append(Sphere(Vector(-500, -200, 620), 50, Vector(255, 0, 0), 'default', None))
 objects.append(Sphere(Vector(-400, -200, 350), 50, Vector(255, 255, 0), 'default', None))
 objects.append(Sphere(Vector(-450, -200, 500), 50, Vector(200, 200, 200), 'reflection_refraction', None))
+
+objects.append(Sphere(Vector(400, 50, 350), 50, None, 'default', "earth.jpeg"))
 
 def getIntersections(ray):
     intersections = []
@@ -147,4 +150,4 @@ for x in range(height):
         color = getColor(ray, camera, 0)
         im[y,x] = (round(color.x), round(color.y), round(color.z))
 
-image.save("result2.jpg")
+image.save("result.jpg")

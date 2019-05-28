@@ -36,5 +36,9 @@ class Plane:
             return self.color
         else:
             width, height = self.im.size
-            r, g, b = self.px[point.x % width, point.z % height]
+            u = Vector(self.normal.y, self.normal.x * (-1), 0)
+            v = Vector.cross(u, self.normal)
+            uCoord = Vector.dot(u, point) % width
+            vCoord = Vector.dot(v, point) % height
+            r, g, b = self.px[uCoord, vCoord]
             return Vector(r, g, b)
