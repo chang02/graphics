@@ -28,8 +28,11 @@ class Sphere:
             return None
         else:
             t = (-b - math.sqrt(discriminant)) / (2.0 * a)
+            t2 = (-b + math.sqrt(discriminant)) / (2.0 * a)
             if t > 0.0001:
                 return Intersection(ray.origin + ray.direction * t, t, self.normal(ray.origin + ray.direction * t), self)
+            elif t2 > 0.0001:
+                return Intersection(ray.origin + ray.direction * t2, t2, self.normal(ray.origin + ray.direction * t2), self)
             else:
                 return None
     
@@ -43,9 +46,5 @@ class Sphere:
             v = 0.5 - math.asin(d.y) / 3.1416
             uCoord = u * width
             vCoord = (1 - v) * height
-            # u = Vector(self.normal.y, self.normal.x * (-1), 0)
-            # v = Vector.cross(u, self.normal)
-            # uCoord = Vector.dot(u, point) % width
-            # vCoord = Vector.dot(v, point) % height
             r, g, b = self.px[uCoord, vCoord]
             return Vector(r, g, b)

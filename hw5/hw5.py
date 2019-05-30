@@ -56,7 +56,7 @@ def getColor(ray, eye, recur):
     intersections = getIntersections(ray)
 
     if len(intersections) == 0:
-        color = backgroundColor * 0.1
+        color = backgroundColor * 0.2
         return color
     else:
         minIntersection = getMinIntersection(intersections)
@@ -66,7 +66,7 @@ def getColor(ray, eye, recur):
         vVector = (eye - point).normal()
         rVector = (nVector * (Vector.dot(lVector, nVector) * 2) - lVector).normal()
         hVector = (nVector * (Vector.dot(vVector, nVector) * 2) - vVector).normal()
-        if minIntersection.obj.type == 'default' or recur > 15:
+        if minIntersection.obj.type == 'default' or recur > 10:
             if isShade(minIntersection.obj, point):
                 color = minIntersection.obj.getColor(point) * 0.2
                 return color
@@ -81,7 +81,7 @@ def getColor(ray, eye, recur):
         elif minIntersection.obj.type == 'reflection_refraction':
             ndotv = Vector.dot(nVector, vVector)
             if ndotv > 0:
-                nr = 1 / 1.2
+                nr = 1 / 1.5
                 d = nVector * (ndotv * nr - math.sqrt(1 - (nr * nr * (1 - (ndotv * ndotv))))) - (vVector * nr)
 
                 newRay1 = Ray(point, d)
@@ -90,9 +90,9 @@ def getColor(ray, eye, recur):
                 newRay2 = Ray(point, hVector)
                 newEye2 = point
                 color2 = getColor(newRay2, newEye2, recur + 1)
-                return color1 * 0.6 + color2 * 0.4
+                return color1 * 0.7 + color2 * 0.3
             elif ndotv < 0:
-                nr = 1 / 1.2
+                nr = 1.5 / 1
                 nVector = nVector * (-1)
                 d = nVector * (ndotv * nr - math.sqrt(1 - (nr * nr * (1 - (ndotv * ndotv))))) - (vVector * nr)
                 newRay1 = Ray(point, d)
@@ -109,11 +109,11 @@ def getColor(ray, eye, recur):
                 return color1 * 0.7 + color2 * 0.3
 
             else:
-                color = backgroundColor * 0.1
+                color = backgroundColor * 0.2
                 return color
                             
         else:
-            color = backgroundColor * 0.1
+            color = backgroundColor * 0.2
             return color
 
 image = Image.new("RGB",(width,height),(255,255,255))
