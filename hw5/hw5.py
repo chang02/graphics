@@ -68,10 +68,10 @@ def getColor(ray, eye, recur):
         hVector = (nVector * (Vector.dot(vVector, nVector) * 2) - vVector).normal()
         if minIntersection.obj.type == 'default' or recur > 15:
             if isShade(minIntersection.obj, point):
-                color = minIntersection.obj.getColor(point) * 0.3
+                color = minIntersection.obj.getColor(point) * 0.2
                 return color
             else:
-                color = minIntersection.obj.getColor(point) * 0.3 + (minIntersection.obj.getColor(point) * max(0, Vector.dot(nVector, lVector))) * 0.3 + (minIntersection.obj.getColor(point) * max(0, Vector.dot(rVector, vVector)**15) * 0.4)
+                color = minIntersection.obj.getColor(point) * 0.2 + (minIntersection.obj.getColor(point) * max(0, Vector.dot(nVector, lVector))) * 0.3 + (minIntersection.obj.getColor(point) * max(0, Vector.dot(rVector, vVector)**15) * 0.5)
                 return color
         elif minIntersection.obj.type == 'reflection':
             newRay = Ray(point, hVector)
@@ -83,8 +83,6 @@ def getColor(ray, eye, recur):
             if ndotv > 0:
                 nr = 1 / 1.2
                 d = nVector * (ndotv * nr - math.sqrt(1 - (nr * nr * (1 - (ndotv * ndotv))))) - (vVector * nr)
-
-                color = minIntersection.obj.getColor(point) * 0.1 + (minIntersection.obj.getColor(point) * max(0, Vector.dot(nVector, lVector))) * 0.3 + (minIntersection.obj.getColor(point) * max(0, Vector.dot(rVector, vVector)**96) * 0.5)
 
                 newRay1 = Ray(point, d)
                 newEye1 = point
@@ -108,7 +106,6 @@ def getColor(ray, eye, recur):
                 newEye2 = point
                 color2 = getColor(newRay2, newEye2, recur + 1)
 
-                color = minIntersection.obj.getColor(point) * 0.1 + (minIntersection.obj.getColor(point) * max(0, Vector.dot(nVector, lVector))) * 0.3 + (minIntersection.obj.getColor(point) * max(0, Vector.dot(rVector, vVector)**96) * 0.5)
                 return color1 * 0.7 + color2 * 0.3
 
             else:
