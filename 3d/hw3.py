@@ -441,7 +441,8 @@ def toSTL(sections):
     
     j = 0
     while j + 1 < len(sections[0]):
-        f.write("  facet.normal 0.0 -1.0 0.0\n")
+        normal = xyz.crossProduct(sections[0][j+1] - xyz(0, -20, 0), sections[0][j] - xyz(0, -20, 0))
+        f.write("  facet normal "+str(normal.x)+" "+str(normal.y)+" "+str(normal.z)+"\n")
         f.write("    outer loop\n")
         f.write("      vertex 0.0, -20.0, 0.0\n")
         f.write("      vertex "+str(sections[0][j+1].x)+" "+str(sections[0][j+1].y)+" "+str(sections[0][j+1].z)+"\n")
