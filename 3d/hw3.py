@@ -457,8 +457,8 @@ def toSTL(sections):
             f.write("      vertex "+str(sections[i][j].x)+" "+str(sections[i][j].y)+" "+str(sections[i][j].z)+"\n")
             f.write("      vertex "+str(sections[i+1][j+1].x)+" "+str(sections[i+1][j+1].y)+" "+str(sections[i+1][j+1].z)+"\n")
             f.write("      vertex "+str(sections[i+1][j].x)+" "+str(sections[i+1][j].y)+" "+str(sections[i+1][j].z)+"\n")
-            f.write("    endloop")
-            f.write("  endfacet")
+            f.write("    endloop\n")
+            f.write("  endfacet\n")
 
             # glBegin(GL_POLYGON)
             # glColor3f(1, 1, 1)
