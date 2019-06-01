@@ -438,6 +438,17 @@ def glutMotion(x, y):
 def toSTL(sections):
     f = open("result.stl", 'w')
     f.write("solid model\n")
+    
+    j = 0
+    while j + 1 < len(sections[0]):
+        f.write("  facet.normal 0.0 -1.0 0.0\n")
+        f.write("    outer loop\n")
+        f.write("      vertex 0.0, -20.0, 0.0\n")
+        f.write("      vertex "+str(sections[0][j+1].x)+" "+str(sections[0][j+1].y)+" "+str(sections[0][j+1].z)+"\n")
+        f.write("      vertex "+str(sections[0][j].x)+" "+str(sections[0][j].y)+" "+str(sections[0][j].z)+"\n")
+        f.write("    endloop\n")
+        f.write("  endfacet\n")
+        j += 1
 
     i = 0
     while i + 1 < len(sections):
@@ -460,13 +471,6 @@ def toSTL(sections):
             f.write("    endloop\n")
             f.write("  endfacet\n")
 
-            # glBegin(GL_POLYGON)
-            # glColor3f(1, 1, 1)
-            # glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
-            # glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
-            # glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
-            # glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
-            # glEnd()
             j += 1
         i += 1    
     
