@@ -435,8 +435,47 @@ def glutMotion(x, y):
             mousePosX = x
             mousePosY = y
 
+def toSTL(sections):
+    f = open("result.stl", 'w')
+    f.write("solid model\n")
+
+    i = 0
+    while i + 1 < len(sections):
+        j = 0
+        while j + 1 < len(sections[i]):
+            normal = xyz.crossProduct(sections[i][j+1] - sections[i][j], sections[i+1][j+1] - sections[i][j])
+            f.write("  facet normal "+str(normal.x)+" "+str(normal.y)+" "+str(normal.z)+"\n")
+            f.write("    outer loop\n")
+            f.write("      vertex "+str(sections[i][j].x)+" "+str(sections[i][j].y)+" "+str(sections[i][j].z)+"\n")
+            f.write("      vertex "+str(sections[i][j+1].x)+" "+str(sections[i][j+1].y)+" "+str(sections[i][j+1].z)+"\n")
+            f.write("      vertex "+str(sections[i+1][j+1].x)+" "+str(sections[i+1][j+1].y)+" "+str(sections[i+1][j+1].z)+"\n")
+            f.write("    endloop\n")
+            f.write("  endfacet\n")
+            normal = xyz.crossProduct(sections[i+1][j+1] - sections[i][j], sections[i+1][j] - sections[i][j])
+            f.write("  facet normal "+str(normal.x)+" "+str(normal.y)+" "+str(normal.z)+"\n")
+            f.write("    outer loop")
+            f.write("      vertex "+str(sections[i][j].x)+" "+str(sections[i][j].y)+" "+str(sections[i][j].z)+"\n")
+            f.write("      vertex "+str(sections[i+1][j+1].x)+" "+str(sections[i+1][j+1].y)+" "+str(sections[i+1][j+1].z)+"\n")
+            f.write("      vertex "+str(sections[i+1][j].x)+" "+str(sections[i+1][j].y)+" "+str(sections[i+1][j].z)+"\n")
+            f.write("    endloop")
+            f.write("  endfacet")
+
+            # glBegin(GL_POLYGON)
+            # glColor3f(1, 1, 1)
+            # glVertex3f(sections[i][j].x, sections[i][j].y, sections[i][j].z)
+            # glVertex3f(sections[i+1][j].x, sections[i+1][j].y, sections[i+1][j].z)
+            # glVertex3f(sections[i+1][j+1].x, sections[i+1][j+1].y, sections[i+1][j+1].z)
+            # glVertex3f(sections[i][j+1].x, sections[i][j+1].y, sections[i][j+1].z)
+            # glEnd()
+            j += 1
+        i += 1    
+    
+    f.write("endsolid model")
+    f.close()
+
 if __name__ == "__main__":
     processInputFile(sys.argv[1])
+    toSTL(splinePoints2)
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
     glutInitWindowSize(width, height)
